@@ -1,0 +1,30 @@
+[v-cloak]{
+    display: none;
+}
+.bg-image .v-image__image{
+    background-size: contain !important;
+}
+.tw{
+    min-width: 50px !important;
+    width: 50px;
+}
+.product-table .v-data-table-header {
+    background-color: #2196f3;
+}
+.product-table th span,
+.product-table th i{
+    color: #fff !important;
+}
+.hover-bg-white:hover{
+    background: #fff !important;
+}
+
+::-webkit-scrollbar{
+    background: none;
+    width: 5px;
+}
+
+::-webkit-scrollbar-thumb{
+    background: #fffa;
+    border-radius: 5px;
+}
