@@ -31,7 +31,6 @@ app.use(express.urlencoded({ extended: false }))
 app.use(express.static(join(dirname, 'images')))
 
 app.use(routes)
-
 app.use('/auth', authroutes)
 app.use('/user', userroutes)
 app.use('/product', productroutes)
