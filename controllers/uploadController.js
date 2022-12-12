@@ -1,6 +1,6 @@
 import User from '../models/User.js'
 
-export const uploadAvatar = (req, res) => {
+export const uploadAvatar = async (req, res) => {
     try{
         await User.findByIdAndUpdate(
             { _id: req.params.id}, 

@@ -52,6 +52,8 @@ export default model('MealPlan', new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Product'
     }],
+    category: String,
+    childcategory: String,
 }, {
     timestamps: true
 }))

@@ -15,6 +15,7 @@ import planroutes from "./routes/plan.js"
 import exerciseroutes from "./routes/exercise.js"
 import trainingroutes from "./routes/training.js"
 import submitroutes from "./routes/submits.js"
+import categotyroutes from "./routes/category.js"
 
 const dirname = url.fileURLToPath(new URL('.', import.meta.url));
 const app = express();
@@ -22,13 +23,14 @@ const server = createServer(app)
 
 PassportApp(app)
 
-app.set('view engine', 'ejs')
+// app.set('view engine', 'ejs')
 
 app.use(cors())
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
+app.use(express.static(join(dirname, 'images')))
+
 app.use(routes)
-app.use(express.static(join(dirname, 'public')))
 
 app.use('/auth', authroutes)
 app.use('/user', userroutes)
@@ -37,6 +39,7 @@ app.use('/plan', planroutes)
 app.use('/exercise', exerciseroutes)
 app.use('/training', trainingroutes)
 app.use('/submit', submitroutes)
+app.use('/category', categotyroutes)
 
 server.listen(port, () => {
     console.log('Server started...')

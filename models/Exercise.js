@@ -13,22 +13,11 @@ export default model('Exercise', new Schema({
         type: String,
         required: true
     },
-    approach: {
-        type: Number,
-        required: true
-    },
-    timing: {
-        type: Number,
-        required: true
-    },
-    calory: {
-        type: Number,
-        required: true
-    },
-    category: {
-        type: String,
-        required: true
-    },
+    approach: Number,
+    timing: Number,
+    calory: Number,
+    category: String,
+    childcategory: String,
 }, {
     timestamps: true
 }))

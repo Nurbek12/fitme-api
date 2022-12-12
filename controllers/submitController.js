@@ -50,6 +50,7 @@ export const accept = async (req, res) => {
         // const {role} = await User.findOne({_id: req.body.user});
         // if(role!=="TRAINER") return res.status(501).json({ status: false, message: 'Вы не можете принять заявку!' })
         const result = await Submit.findByIdAndUpdate(req.params.id, { status: 'принято' }, { new: true })
+        console.log(result);
         await User.findByIdAndUpdate(result.user, { $push: { mytrainers: result.trainer } })
         await User.findByIdAndUpdate(result.trainer, { $push: { disciples: result.user } })
         res.status(200).json({ status: true, result, message: "Заявка успешно принято!" })

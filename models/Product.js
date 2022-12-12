@@ -37,6 +37,7 @@ export default model('Product', new Schema({
         type: String,
         default: true
     },
+    childcategory: String,
 }, {
     timestamps: true
 }))

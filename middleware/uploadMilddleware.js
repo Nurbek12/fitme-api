@@ -6,7 +6,7 @@ const dirname = url.fileURLToPath(new URL('.', import.meta.url));
 export default multer({
     storage: diskStorage({
         destination: (_,__,cb) => {
-            cb(null, path.join(dirname, '../', 'public', 'files'))
+            cb(null, path.join(dirname, '../', 'images'))
         },
         filename: (req, file, cb) => {
             cb(null, req.body.filename)

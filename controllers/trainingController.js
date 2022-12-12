@@ -8,7 +8,7 @@ export const getAll = async (req, res) => {
                 model: 'User',
                 select: "_id age email image male name phonenumber"
             }, {
-                path: 'exercises.exercise',
+                path: 'exercises.workout.exercise',
                 model: 'Exercise'
             }])
             .exec((_, result) => {
@@ -22,13 +22,13 @@ export const getAll = async (req, res) => {
 
 export const find = async (req, res) => {
     try{
-        await Training.findOne({$or: [{title: {$regex: req.query?.title||'', $options: 'i'}}, req.query]})
+        await Training.findOne(req.query)
             .populate([{
                 path: 'author',
                 model: 'User',
                 select: "_id age email image male name phonenumber"
             }, {
-                path: 'exercises.exercise',
+                path: 'exercises.workouts.exercise',
                 model: 'Exercise'
             }])
             .exec((_, result) => {
@@ -72,13 +72,13 @@ export const edit = async (req, res) => {
 
 export const addExercise = async (req, res) => {
     try{
-        await Training.findByIdAndUpdate(req.params.id, { $push: { exercises: req.body } }, { new: true })
+        await Training.findByIdAndUpdate(req.params.id1, { $push: { exercises: req.body } }, { new: true })
             .populate([{
                 path: 'author',
                 model: 'User',
                 select: "_id age email image male name phonenumber"
             }, {
-                path: 'exercises.exercise',
+                path: 'exercises.workouts.exercise',
                 model: 'Exercise'
             }])
             .exec((_, result) => {
@@ -98,7 +98,7 @@ export const removeExercise = async (req, res) => {
                 model: 'User',
                 select: "_id age email image male name phonenumber"
             }, {
-                path: 'exercises.exercise',
+                path: 'exercises.workouts.exercise',
                 model: 'Exercise'
             }])
             .exec((_, result) => {

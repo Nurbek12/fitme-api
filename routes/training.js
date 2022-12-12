@@ -11,7 +11,7 @@ export default Router()
 
 .put('/edit/:id', auth, upload.single('file'), edit)
 
-.put('/addexer/:id', auth, addExercise)
+.put('/addexer/:id1/:id2', auth, addExercise)
 .put('/removeexer/:id', auth, removeExercise)
 
 .delete('/delete/:id', auth, delet)

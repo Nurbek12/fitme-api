@@ -1,11 +1,7 @@
-import { model, Schema } from "mongoose"
+import { model, Schema } from 'mongoose'
 
-export default model('Training', new Schema({
+export default model('trainings', new Schema({
     title: {
-        type: String,
-        required: true
-    },
-    image: {
         type: String,
         required: true
     },
@@ -18,35 +14,38 @@ export default model('Training', new Schema({
         required: true
     },
     metadescription: {
-        type: String
-    },
-    male: {
         type: String,
         required: true
     },
     weeks: {
-        type: Number,
+        type: String,
         required: true
     },
     price: {
-        type: Number,
+        type: String,
+        required: true
+    },
+    male: {
+        type: String,
         required: true
     },
     category: {
         type: String,
         required: true
     },
+    childcategory: String,
     exercises: [{
-        exercise: {
-            type: Schema.Types.ObjectId,
-            ref: "Exercise"
-        },
-        sets: String,
-        week: [{
-            repeat: Number,
-            weigth: Number,
+        workout: [{
+            exercise: {
+                type: Schema.Types.ObjectId,
+                ref: 'Exercise'
+            },
+            sets: String,
+            week: [{
+                repeat: 0,
+                weigth: 0
+            }]
         }],
-        // status: String,
     }],
     author: {
         type: Schema.Types.ObjectId,

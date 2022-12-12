@@ -15,11 +15,11 @@ export const getAll = async (req, res) => {
 
 export const getPlan = async (req, res) => {
     try{
-        await MealPlan.findOne({$or: [{title: {$regex: req.query?.title||'', $options: 'i'}}, req.query]})
+        await MealPlan.findOne(req.query)
             .populate([{
                 path: 'author',
                 model: 'User',
-                select: "_id name phonenumber"
+                select: "_id age email image male name phonenumber"
             }, {
                 path: 'breakfast',
                 model: 'Product'
