@@ -13,7 +13,7 @@ export const getAll = async (req, res) => {
 
 export const getProduct = async (req, res) => {
     try{
-        const result = await Product.findOne(req.query);
+        const result = await Product.find(req.query);
         res.status(200).json({ status: true, result })
     }catch(err){
         console.log(err);

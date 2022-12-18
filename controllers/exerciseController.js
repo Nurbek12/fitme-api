@@ -13,7 +13,7 @@ export const getAll = async (req, res) => {
 
 export const getExercise = async (req, res) => {
     try{
-        const result = await Exercise.findOne(req.query);
+        const result = await Exercise.find(req.query);
         res.status(200).json({ status: true, result })
     }catch(err){
         console.log(err);

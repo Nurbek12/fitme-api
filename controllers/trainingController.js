@@ -19,7 +19,7 @@ export const getAll = async (req, res) => {
 
 export const find = async (req, res) => {
     try{
-        await Training.findOne(req.query)
+        await Training.find(req.query)
             .populate([ {
                 path: 'exercises.workouts.exercise',
                 model: 'Exercise'
