@@ -6,6 +6,8 @@ import { getProduct, getAll, add, edit, delet } from '../controllers/productCont
 export default Router()
     .get('/find', auth, getProduct)
     .get('/all', auth, getAll)
-    .post('/add', auth, upload.single('file'), add)
-    .put('/edit/:id', auth, upload.single('file'), edit)
+    .post('/add', auth, upload.single('image'), add)
+    .put('/edit/:id', auth, upload.single('image'), edit)
     .delete('/delete/:id', auth, delet)
+
+// success

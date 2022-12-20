@@ -13,6 +13,14 @@ export default model('Exercise', new Schema({
         type: String,
         required: true
     },
+    image: {
+        type: String,
+        default: true
+    },
+    author: {
+        type: String,
+        required: true
+    },
     approach: Number,
     timing: Number,
     calory: Number,

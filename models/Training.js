@@ -9,23 +9,9 @@ export default model('trainings', new Schema({
         type: String,
         required: true
     },
-    level: {
-        type: String,
-        required: true
-    },
-    metadescription: {
-        type: String,
-        required: true
-    },
-    weeks: {
-        type: String,
-        required: true
-    },
+    metadescription: String,
+    weeks: Number,
     price: {
-        type: String,
-        required: true
-    },
-    male: {
         type: String,
         required: true
     },
@@ -33,23 +19,33 @@ export default model('trainings', new Schema({
         type: String,
         required: true
     },
-    childcategory: String,
+    childcategory: {
+        type: String,
+        required: true
+    },
+    image: {
+        type: String,
+        required: true
+    },
+    author: {
+        type: String,
+        required: true
+    },
     exercises: [{
+        id: String,
         workout: [{
             exercise: {
                 type: Schema.Types.ObjectId,
                 ref: 'Exercise'
             },
             sets: String,
-            week: [{
-                repeat: 0,
-                weigth: 0
-            }]
+            repeat: Number,
+            weigth: Number
         }],
     }],
     author: {
-        type: Schema.Types.ObjectId,
-        ref: 'User'
+        type: String,
+        required: true
     },
 }, {
     timestamps: true

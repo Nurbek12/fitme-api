@@ -1,0 +1,75 @@
+<%- include('../head'); -%>
+
+    <body>
+        <div id="app" v-cloak>
+            <v-app>
+                <v-navigation-drawer app color="grey darken-4" v-model="drawer" flat :mini-variant="drawer" permanent>
+                    <v-list nav dense dark>
+                        <v-list-item-group>
+                            <v-list-item v-for="(link, i) in links" :key="i" link :href="`/admin${link.url}`">
+                                <v-list-item-icon v-if="!drawer">
+                                    <v-icon v-text="link.icon"></v-icon>
+                                </v-list-item-icon>
+                                <v-tooltip right v-else color="grey darken-4">
+                                    <template v-slot:activator="{ on, attrs }">
+                                        <v-list-item-icon v-bind="attrs" v-on="on">
+                                            <v-icon v-text="link.icon"></v-icon>
+                                        </v-list-item-icon>
+                                    </template>
+                                    <span>{{link.title}}</span>
+                                </v-tooltip>
+                                <v-list-item-title>{{link.title}}</v-list-item-title>
+                            </v-list-item>
+                        </v-list-item-group>
+                    </v-list>
+                </v-navigation-drawer>
+
+                <v-app-bar app elevation="0" color="grey lighten-3">
+                    <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
+                    <v-toolbar-title>Панель Админа</v-toolbar-title>
+                    <v-spacer></v-spacer>
+
+                    <v-btn icon color="red accent-2">
+                        <v-icon>mdi-cog</v-icon>
+                    </v-btn>
+                    <v-badge color="red accent-2" dot content="1" overlap>
+                        <v-btn icon color="deep-purple lighten-2">
+                            <v-icon>mdi-bell</v-icon>
+                        </v-btn>
+                    </v-badge>
+                    <v-btn icon color="deep-purple lighten-2">
+                        <v-icon>mdi-account</v-icon>
+                    </v-btn>
+                </v-app-bar>
+
+                <v-main app style="background-color: #eee;">
+                    <v-container fluid>
+
+                    </v-container>
+                </v-main>
+            </v-app>
+        </div>
+        <script>
+            new Vue({
+                el: '#app',
+                data: () => ({
+                    drawer: null,
+                    links: [
+                        { title: 'Дашбоард', icon: 'mdi-home', url: '/dashboard' },
+                        { title: 'Пользователи', icon: 'mdi-account', url: '/users' },
+                        { title: 'Тренеры', icon: 'mdi-account-school', url: '/trainers' },
+                        { title: 'Админы', icon: 'mdi-account-tie-hat', url: '/admins' },
+                        { title: 'Продукт', icon: 'mdi-baguette', url: '/products' },
+                        { title: 'Схема питания', icon: 'mdi-hamburger', url: '/mealplans' },
+                        { title: 'Финансы', icon: 'mdi-currency-usd', url: '/finance' },
+                        { title: 'Упражнение', icon: 'mdi-dumbbell', url: '/exercises' },
+                        { title: 'Тренировки', icon: 'mdi-karate', url: '/workout' },
+                        { title: 'Feedback', icon: 'mdi-message-processing', url: '/feedback' },
+                    ],
+                }),
+                vuetify: new Vuetify()
+            })
+        </script>
+    </body>
+
+    </html>

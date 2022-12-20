@@ -15,7 +15,7 @@ export const getAll = async (req, res) => {
 
 export const getPlan = async (req, res) => {
     try{
-        await MealPlan.findOne(req.query)
+        await MealPlan.find(req.query)
             .populate([{
                 path: 'author',
                 model: 'User',

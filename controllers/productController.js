@@ -1,4 +1,5 @@
 import Product from '../models/Product.js'
+import { fileurl } from '../config/generatecode.js'
 
 export const getAll = async (req, res) => {
     try{
@@ -12,7 +13,7 @@ export const getAll = async (req, res) => {
 
 export const getProduct = async (req, res) => {
     try{
-        const result = await Product.findOne(req.query);
+        const result = await Product.find(req.query);
         res.status(200).json({ status: true, result })
     }catch(err){
         console.log(err);
@@ -22,8 +23,8 @@ export const getProduct = async (req, res) => {
  
 export const add = async (req, res) => {
     try{
-        const { filename, ...data } = req.body;
-        const result = await Product.create({...data, image: filename});
+        req.body.image = fileurl(req, req.file.filename)
+        const result = await Product.create(req.body);
         res.status(200).json({ status: true, result, message: 'Успешно добавлено!' })
     }catch(err){
         console.log(err);
@@ -33,8 +34,7 @@ export const add = async (req, res) => {
 
 export const edit = async (req, res) => {
     try{
-        const { filename } = req.body;
-        if(filename) req.body.image = filename;
+        if(req.file) req.body.image = fileurl(req, req.file.filename)
         const result = await Product.findByIdAndUpdate(req.params.id, { $set: req.body }, { new: true });
         res.status(200).json({ status: true, result, message: 'Успешно отредактировано!' })
     }catch(err){

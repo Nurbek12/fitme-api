@@ -6,6 +6,8 @@ import generatecode from "../config/generatecode.js"
 
 export const register = async (req, res) => {
     try{
+        const fuser = await User.findOne({phonenumber: req.body.phonenumber})
+        if(fuser) return  res.status(403).json({ status: false, message: 'Пользователь с этим номером уже существует!' })
         const verifycode = generatecode();
         await User.create({ ...req.body, verifycode }).then(user => {
             sendphone(user.phonenumber, verifycode)
@@ -19,6 +21,8 @@ export const register = async (req, res) => {
 
 export const login = async (req, res) => {
     try{
+        const fuser = await User.findOne({phonenumber: req.body.phonenumber})
+        if(!fuser) return  res.status(404).json({ status: false, message: 'По этому номеру не найден пользователь!' })
         const verifycode = generatecode();
         await User.findOneAndUpdate({ phonenumber: req.body.phonenumber }, {$set: { verifycode }}).then((user) => {
             sendphone(user.phonenumber, verifycode)

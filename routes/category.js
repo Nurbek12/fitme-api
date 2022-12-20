@@ -9,3 +9,5 @@ export default Router()
     .post('/add', auth, add)
     .put('/edit/:id', auth, edit)
     .delete('/delete/:id', auth, delet)
+
+// success

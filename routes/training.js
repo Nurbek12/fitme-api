@@ -4,14 +4,14 @@ import { getAll, find, create, edit, addExercise, removeExercise, delet } from '
 import upload from '../middleware/uploadMilddleware.js'
 
 export default Router()
-.get('/all', auth, getAll)
-.get('/find', auth, find)
+    .get('/all', auth, getAll)
+    .get('/find', auth, find)
 
-.post('/add', auth, upload.single('file'), create)
+    .post('/add', auth, upload.single('image'), create)
 
-.put('/edit/:id', auth, upload.single('file'), edit)
+    .put('/edit/:id', auth, upload.single('image'), edit)
 
-.put('/addexer/:id1/:id2', auth, addExercise)
-.put('/removeexer/:id', auth, removeExercise)
+    .put('/addexer/:id1/:id2', auth, addExercise)
+    .put('/removeexer/:id', auth, removeExercise)
 
-.delete('/delete/:id', auth, delet)
+    .delete('/delete/:id', auth, delet)

@@ -6,3 +6,5 @@ export default Router()
     .post('/login', login)
     .post('/verify', verify)
     .post('/adminlogin', admin)
+
+// success

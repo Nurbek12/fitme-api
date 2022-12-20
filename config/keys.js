@@ -6,9 +6,17 @@ export const mongourl = process.env.MONGO_URL
 export const secret = process.env.SECRET
 export const port = process.env.PORT
 export const appname = 'Fitme'
-export const apiURL = process.env.BASE_API_URL
-export const serverURL = process.env.BASE_SERVER_URL
+
+export const apiURL = process.env.CALLBACK_URL
+export const serverURL = process.env.SERVER_URL
 export const clientURL = process.env.BASE_CLIENT_URL
+
+export const googleClient = process.env.GOOGLE_PRIVATE_KEY
+export const googleSecret = process.env.GOOGLE_SECRET_KEY
+
+export const facebookClientPrivate = process.env.GOOGLE_PRIVATE_KEY
+export const facebookClientSecret = process.env.GOOGLE_SECRET_KEY
+
 // export const stripe_pub = process.env.STRIPE_PUB
 // export const stripe_priv = process.env.STRIPE_PRIV
 

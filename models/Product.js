@@ -9,6 +9,10 @@ export default model('Product', new Schema({
         type: Number,
         default: true
     },
+    author: {
+        type: String,
+        required: true
+    },
     image: {
         type: String,
         default: true

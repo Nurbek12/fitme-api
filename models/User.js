@@ -11,10 +11,7 @@ export default model('User', new Schema({
     name: String,
     male: String,
     city: String,
-    image: {
-        type: String,
-        default: 'noimg.jpg'
-    },
+    image: String,
     about: String,
     email: String,
     password: String,
@@ -22,6 +19,8 @@ export default model('User', new Schema({
     verifycode: String,
     speciality: String,
     phonenumber: String,
+    provider: String,
+    socialID: String,
     
     age: Number,
     experience: Number,

@@ -4,4 +4,4 @@ import { auth } from '../middleware/authMilddleware.js'
 import { uploadAvatar } from '../controllers/uploadController.js'
 
 Router()
-    .post('/avatar/:id', auth, upload.single('file'), uploadAvatar)
+    .post('/avatar/:id', auth, upload.single('image'), uploadAvatar)

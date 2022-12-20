@@ -19,8 +19,8 @@ export default model('MealPlan', new Schema({
     },
 
     author: {
-        type: Schema.Types.ObjectId,
-        ref: 'User'
+        type: String,
+        required: true
     },
 
     carbohydrates: {

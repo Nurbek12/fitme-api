@@ -1,8 +1,9 @@
 import Exercise from '../models/Exercise.js'
+import { fileurl } from '../config/generatecode.js'
 
 export const getAll = async (req, res) => {
     try{
-        const result = await Exercise.find();
+        const result = await Exercise.find(req.query);
         res.status(200).json({ status: true, result })
     }catch(err){
         console.log(err);
@@ -10,31 +11,46 @@ export const getAll = async (req, res) => {
     }
 }
 
+export const getForArray = async (req, res) => {
+    try{
+        await Exercise.find(req.query)
+        .select('_id title')
+        .exec((_, result) => {
+            res.status(200).json({ status: true, result })
+        });
+    }catch(err){
+        console.log(err);
+        res.status(500).json({ status: false, message: 'Ошибка' })
+    }
+}
 export const getExercise = async (req, res) => {
     try{
-        const result = await Exercise.findOne(req.query);
+        const result = await Exercise.find(req.query);
         res.status(200).json({ status: true, result })
     }catch(err){
         console.log(err);
         res.status(500).json({ status: false, message: 'Ошибка' })
     }
 }
-
+// success
 export const add = async (req, res) => {
     try{
-        const { filename, ...data } = req.body;
-        const result = await Exercise.create({...data, video: filename});
+        req.body.image = fileurl(req, req.files.image[0].filename)
+        req.body.video = fileurl(req, req.files.video[0].filename)
+        const result = await Exercise.create(req.body);
         res.status(200).json({ status: true, result, message: 'Успешно добавлено!' })
     }catch(err){
         console.log(err);
         res.status(500).json({ status: false, message: 'Ошибка' })
     }
 }
-
+// failed
 export const edit = async (req, res) => {
     try{
-        const { filename } = req.body;
-        if(filename) req.body.video = filename;
+        // if(req.files){
+        //     req.body.image = fileurl(req, req.files.image[0].filename)
+        //     req.body.video = fileurl(req, req.files.video[0].filename)
+        // }
         const result = await Exercise.findByIdAndUpdate(req.params.id, { $set: req.body }, { new: true });
         res.status(200).json({ status: true, result, message: 'Успешно отредактировано!' })
     }catch(err){
