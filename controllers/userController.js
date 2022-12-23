@@ -60,6 +60,7 @@ export const getAllTrainers = async (req, res) => {
 export const getTrainer = async (req, res) => {
     try{
         const result = await User.findOne({_id: req.params.id, role: 'TRAINER'})
+        .select('name email phonenumber city about image speciality formation male age experience socialMedia disciples mealplans workouts');
         res.status(200).json({ status: true, result })
     }catch(err){
         console.log(err);
