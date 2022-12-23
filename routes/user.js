@@ -17,7 +17,7 @@ export default Router()
 
     .post('/add/trainer', auth, upload.single('image'), addTrainer)
 
-    .get('/getadmin/:id', auth, getAdmin)
+    .get('/getadmin/', auth, getAdmin)
     .get('/getadmins', auth, getAllAdmin)
 
     .post('/add/admin', auth, addAdmin)
