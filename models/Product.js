@@ -13,30 +13,12 @@ export default model('Product', new Schema({
         type: String,
         required: true
     },
-    image: {
-        type: String,
-        default: true
-    },
-    cookingtime: {
-        type: Number,
-        default: true
-    },
-    carbohydrates: {
-        type: Number,
-        default: true
-    },
-    fat: {
-        type: Number,
-        default: true
-    },
-    proteins: {
-        type: Number,
-        default: true
-    },
-    calories: {
-        type: Number,
-        default: true
-    },
+    image: String,
+    cookingtime: Number,
+    carbohydrates: Number,
+    fat: Number,
+    proteins: Number,
+    calories: Number,
     category: {
         type: String,
         default: true

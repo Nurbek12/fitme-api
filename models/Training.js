@@ -32,6 +32,7 @@ export default model('trainings', new Schema({
         required: true
     },
     exercises: [{
+        id: String,
         workout: [{
             exercise: {
                 type: Schema.Types.ObjectId,

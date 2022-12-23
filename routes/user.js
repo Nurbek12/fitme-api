@@ -1,4 +1,5 @@
 import { Router } from "express"
+import upload from '../middleware/uploadMilddleware.js'
 import { auth } from '../middleware/authMilddleware.js'
 import { getAllUsers, getUser, getAll, addUser, 
         getAllTrainers, getTrainer, addTrainer, 
@@ -14,13 +15,13 @@ export default Router()
     .get('/gettrainer/:id', auth, getTrainer)
     .get('/gettrainers', auth, getAllTrainers)
 
-    .post('/add/trainer', auth, addTrainer)
+    .post('/add/trainer', auth, upload.single('image'), addTrainer)
 
     .get('/getadmin/:id', auth, getAdmin)
     .get('/getadmins', auth, getAllAdmin)
 
     .post('/add/admin', auth, addAdmin)
     
-    .put('/edit/:id', auth, editUser)
+    .put('/edit/:id', auth, upload.single('image'), editUser)
 
     .delete('/delete/:id', auth, deleteUser)

@@ -18,5 +18,5 @@ export default Router()
             res.status(500).json({ status: false, message: 'Ошибка' })
         }
     })
-
+    .get('/aut', (_, res) => res.render('googleauth'))
 // 

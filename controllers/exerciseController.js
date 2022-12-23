@@ -11,6 +11,18 @@ export const getAll = async (req, res) => {
     }
 }
 
+export const getForArray = async (req, res) => {
+    try{
+        await Exercise.find(req.query)
+        .select('_id title')
+        .exec((_, result) => {
+            res.status(200).json({ status: true, result })
+        });
+    }catch(err){
+        console.log(err);
+        res.status(500).json({ status: false, message: 'Ошибка' })
+    }
+}
 export const getExercise = async (req, res) => {
     try{
         const result = await Exercise.find(req.query);

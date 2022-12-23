@@ -1,4 +1,5 @@
 import User from "../models/User.js"
+import { fileurl } from '../config/generatecode.js'
 
 // users
 export const getAll = async (req, res) => {
@@ -11,9 +12,10 @@ export const getAll = async (req, res) => {
     }
 }
 
-export const getAllUsers = async (_, res) => {
+export const getAllUsers = async (req, res) => {
     try{
-        const result = await User.find({ role: 'USER' });
+        const result = await User.find({ ...req.query, role: 'USER' })
+        .select('name email phonenumber male age mytrainers mealplans workouts');
         res.status(200).json({ status: true, result })
     }catch(err){
         console.log(err);
@@ -25,6 +27,7 @@ export const getAllUsers = async (_, res) => {
 export const getUser = async (req, res) => {
     try{
         const result = await User.findOne({_id: req.params.id, role: 'USER'})
+        .select('name email phonenumber male age mytrainers mealplans workouts')
         res.status(200).json({ status: true, result })
     }catch(err){
         console.log(err);
@@ -43,9 +46,10 @@ export const addUser = async (req, res) => {
 }
 
 // trainers
-export const getAllTrainers = async (_, res) => {
+export const getAllTrainers = async (req, res) => {
     try{
-        const result = await User.find({role: 'TRAINER'});
+        const result = await User.find({ ...req.query, role: 'TRAINER'})
+        .select('name email phonenumber city about image speciality formation male age experience socialMedia disciples mealplans workouts');
         res.status(200).json({ status: true, result })
     }catch(err){
         console.log(err);
@@ -65,6 +69,7 @@ export const getTrainer = async (req, res) => {
 
 export const addTrainer = async (req, res) => {
     try{
+        if(req.file) req.body.image = fileurl(req, req.file.filename)
         const result = await User.create({...req.body, role: 'TRAINER'})
         res.status(200).json({ status: true, result, message: 'Успешно добавлено!' })
     }catch(err){
@@ -74,9 +79,10 @@ export const addTrainer = async (req, res) => {
 }
 
 // admin
-export const getAllAdmin = async (_, res) => {
+export const getAllAdmin = async (req, res) => {
     try{
-        const result = await User.find({role: 'ADMIN'});
+        const result = await User.find({ ...req.query, role: 'ADMIN'})
+        .select('name email phonenumber password');;
         res.status(200).json({ status: true, result })
     }catch(err){
         console.log(err);
@@ -107,6 +113,7 @@ export const addAdmin = async (req, res) => {
 // edit
 export const editUser = async (req, res) => {
     try{
+        if(req.file) req.body.image = fileurl(req, req.file.filename)
         const result = await User.findByIdAndUpdate(req.params.id, { $set: req.body }, { new :true })
         res.status(200).json({ status: true, result, message: 'Успешно отредактировано!' })
     }catch(err){

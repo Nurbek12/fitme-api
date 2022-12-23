@@ -35,7 +35,8 @@ export const find = async (req, res) => {
  
 export const create = async (req, res) => {
     try{
-        req.body.image = fileurl(req, req.file.filename)
+        if(req.body.exercises) req.body.exercises = JSON.parse(req.body.exercises);
+        if(req.file) req.body.image = fileurl(req, req.file.filename)
         const { _id } = await Training.create(req.body);
         await Training.findById(_id)
             .then((result) => {
@@ -49,6 +50,7 @@ export const create = async (req, res) => {
 // !!!
 export const edit = async (req, res) => {
     try{
+        if(req.file) req.body.image = fileurl(req, req.file.filename)
         await Training.findByIdAndUpdate(req.params.id, { $set: req.body }, { new: true })
             .exec((_, result) => {
                 res.status(200).json({ status: true, result, message: 'Успешно отредактировано!' })
