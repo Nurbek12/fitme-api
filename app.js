@@ -11,7 +11,9 @@ import routes from './routes/routes.js'
 import authroutes from './routes/auth.js'
 import userroutes from "./routes/user.js"
 import productroutes from "./routes/product.js"
+import dishroutes from "./routes/dish.js"
 import planroutes from "./routes/plan.js"
+import mealroutes from "./routes/mealschema.js"
 import exerciseroutes from "./routes/exercise.js"
 import trainingroutes from "./routes/training.js"
 import submitroutes from "./routes/submits.js"
@@ -26,10 +28,7 @@ PassportApp(app)
 
 // app.set('view engine', 'ejs')
 
-app.use(cors({
-    origin: process.env.ORIGIN,
-    optionsSuccessStatus: 200
-}))
+app.use(cors())
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 app.use(express.static(join(dirname, 'files')))
@@ -39,7 +38,9 @@ app.use(routes)
 app.use('/auth', authroutes)
 app.use('/user', userroutes)
 app.use('/product', productroutes)
+app.use('/dish', dishroutes)
 app.use('/plan', planroutes)
+app.use('/meal', mealroutes)
 app.use('/exercise', exerciseroutes)
 app.use('/training', trainingroutes)
 app.use('/submit', submitroutes)

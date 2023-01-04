@@ -13,44 +13,48 @@ export default model('MealPlan', new Schema({
         type: String,
         required: true
     },
-    type: {
-        type: String,
-        required: true
-    },
-
     author: {
         type: String,
         required: true
     },
-
     carbohydrates: {
-        type: Number,
-        default: true
+        percent: Number,
+        value: Number
     },
     fat: {
-        type: Number,
-        default: true
+        percent: Number,
+        value: Number
     },
     proteins: {
-        type: Number,
-        default: true
+        percent: Number,
+        value: Number
     },
     calories: {
         type: Number,
-        default: true
     },
 
-    breakfast: [{
-        type: Schema.Types.ObjectId,
-        ref: 'Product'
-    }],
-    dinner: [{
-        type: Schema.Types.ObjectId,
-        ref: 'Product'
-    }],
-    supper: [{
-        type: Schema.Types.ObjectId,
-        ref: 'Product'
+    plan: [{
+        title: String,
+        recs: String,
+        target: {
+            c: Number,
+            b: Number,
+            j: Number,
+            u: Number
+        },
+        actual: {
+            c: Number,
+            b: Number,
+            j: Number,
+            u: Number
+        },
+        products: [{
+            count: Number,
+            product: {
+                type: Schema.Types.ObjectId,
+                ref: 'Product'
+            },
+        }]
     }],
     category: String,
     childcategory: String,

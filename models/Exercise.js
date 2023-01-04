@@ -5,18 +5,12 @@ export default model('Exercise', new Schema({
         type: String,
         required: true
     },
-    video: {
-        type: String,
-        required: true
-    },
+    video: String,
     description: {
         type: String,
         required: true
     },
-    image: {
-        type: String,
-        default: true
-    },
+    image: String,
     author: {
         type: String,
         required: true

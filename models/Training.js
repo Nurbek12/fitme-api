@@ -39,8 +39,10 @@ export default model('trainings', new Schema({
                 ref: 'Exercise'
             },
             sets: String,
+            
             repeat: Number,
-            weigth: Number
+            weigth: Number,
+            week: Array
         }],
     }],
     author: {

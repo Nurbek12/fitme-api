@@ -1,6 +1,6 @@
 import { Router } from 'express'
 import { auth } from '../middleware/authMilddleware.js'
-import { getAll, getPlan, create, edit, delet } from '../controllers/planController.js'
+import { getAll, getPlan, create, edit, delet, addProduct, removeProduct } from '../controllers/mealController.js'
 
 export default Router()
     .get('/all', auth, getAll)
@@ -9,6 +9,9 @@ export default Router()
     .post('/add', auth, create)
 
     .put('/edit/:id', auth, edit)
+
+    .put('/addprod/:id/:time', auth, addProduct)
+    .put('/removeprod/:id/:time', auth, removeProduct)
 
     .delete('/delete/:id', auth, delet)
 

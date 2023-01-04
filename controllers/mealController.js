@@ -1,13 +1,17 @@
-import Training from '../models/Training.js'
-import User from '../models/User.js'
-import { fileurl } from '../config/generatecode.js'
+import MealPlan from '../models/MealSchema.js'
 
 export const getAll = async (req, res) => {
     try{
-        await Training.find()
+        await MealPlan.find()
             .populate([{
-                path: 'exercises.workout.exercise',
-                model: 'Exercise'
+                path: 'breakfast',
+                model: 'Product'
+            }, {
+                path: 'dinner',
+                model: 'Product'
+            }, {
+                path: 'supper',
+                model: 'Product'
             }])
             .exec((_, result) => {
                 res.status(200).json({ status: true, result })
@@ -18,12 +22,18 @@ export const getAll = async (req, res) => {
     }
 }
 
-export const find = async (req, res) => {
+export const getPlan = async (req, res) => {
     try{
-        await Training.find(req.query)
-            .populate([ {
-                path: 'exercises.workouts.exercise',
-                model: 'Exercise'
+        await MealPlan.find(req.query)
+            .populate([{
+                path: 'breakfast',
+                model: 'Product'
+            }, {
+                path: 'dinner',
+                model: 'Product'
+            }, {
+                path: 'supper',
+                model: 'Product'
             }])
             .exec((_, result) => {
                 res.status(200).json({ status: true, result })
@@ -36,11 +46,9 @@ export const find = async (req, res) => {
  
 export const create = async (req, res) => {
     try{
-        if(req.body.exercises) req.body.exercises = JSON.parse(req.body.exercises);
-        if(req.file) req.body.image = fileurl(req, req.file.filename)
-        const { _id } = await Training.create(req.body);
-        await Training.findById(_id)
-            .then((result) => {
+        const { _id } = await MealPlan.create(req.body);
+        await MealPlan.findById(_id)
+            .exec((_, result) => {
                 res.status(200).json({ status: true, result, message: 'Успешно добавлено!' })
             })
     }catch(err){
@@ -48,11 +56,20 @@ export const create = async (req, res) => {
         res.status(500).json({ status: false, message: 'Ошибка!' })
     }
 }
-// !!!
+
 export const edit = async (req, res) => {
     try{
-        if(req.file) req.body.image = fileurl(req, req.file.filename)
-        await Training.findByIdAndUpdate(req.params.id, { $set: req.body }, { new: true })
+        await MealPlan.findByIdAndUpdate(req.params.id, { $set: req.body }, { new: true })
+            .populate([{
+                path: 'breakfast',
+                model: 'Product'
+            }, {
+                path: 'dinner',
+                model: 'Product'
+            }, {
+                path: 'supper',
+                model: 'Product'
+            }])
             .exec((_, result) => {
                 res.status(200).json({ status: true, result, message: 'Успешно отредактировано!' })
             })
@@ -62,26 +79,19 @@ export const edit = async (req, res) => {
     }
 }
 
-export const addProgramToUser = async (req, res) => {
-    try{
-        await User.findByIdAndUpdate(req.params.id1, { $push: {workouts: req.params.id2} }, { new: true })
-            .populate('workouts')
-            .exec((_, result) => {
-                res.status(200).json({ status: true, result: result.workouts, message: 'Успешно добавлено!' })
-            })
-    }catch(err){
-        console.log(err);
-        res.status(500).json({ status: false, message: 'Ошибка!' })
-    }
-}
 
-// !!!!!!!
-export const addExercise = async (req, res) => {
+export const addProduct = async (req, res) => {
     try{
-        await Training.findByIdAndUpdate(req.params.id1, { $push: { exercises: req.body } }, { new: true })
+        await MealPlan.findByIdAndUpdate(req.params.id, { $push: { [req.params.time]: { $each: req.body.items} } }, { new: true })
             .populate([{
-                path: 'exercises.workouts.exercise',
-                model: 'Exercise'
+                path: 'breakfast',
+                model: 'Product'
+            }, {
+                path: 'dinner',
+                model: 'Product'
+            }, {
+                path: 'supper',
+                model: 'Product'
             }])
             .exec((_, result) => {
                 res.status(200).json({ status: true, result, message: 'Успешно добавлено!' })
@@ -91,13 +101,19 @@ export const addExercise = async (req, res) => {
         res.status(500).json({ status: false, message: 'Ошибка!' })
     }
 }
-// !!!!!!!
-export const removeExercise = async (req, res) => {
+
+export const removeProduct = async (req, res) => {
     try{
-        await Training.findByIdAndUpdate(req.params.id, { $pull: { exercises: req.body.id } }, { new: true })
+        await MealPlan.findByIdAndUpdate(req.params.id, { $pull: { [req.params.time]: req.body.id } }, { new: true })
             .populate([{
-                path: 'exercises.workouts.exercise',
-                model: 'Exercise'
+                path: 'breakfast',
+                model: 'Product'
+            }, {
+                path: 'dinner',
+                model: 'Product'
+            }, {
+                path: 'supper',
+                model: 'Product'
             }])
             .exec((_, result) => {
                 res.status(200).json({ status: true, result, message: 'Успешно удалено!' })
@@ -110,7 +126,7 @@ export const removeExercise = async (req, res) => {
 
 export const delet = async (req, res) => {
     try{
-        await Training.findByIdAndDelete(req.params.id)
+        await MealPlan.findByIdAndDelete(req.params.id)
         .then(() => {
             res.status(200).json({ status: true, message: 'Успешно удалено!' })
         })

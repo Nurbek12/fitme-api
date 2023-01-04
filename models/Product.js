@@ -5,16 +5,11 @@ export default model('Product', new Schema({
         type: String,
         default: true
     },
-    portion: {
-        type: Number,
-        default: true
-    },
     author: {
         type: String,
         required: true
     },
     image: String,
-    cookingtime: Number,
     carbohydrates: Number,
     fat: Number,
     proteins: Number,

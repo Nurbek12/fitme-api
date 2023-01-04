@@ -25,12 +25,9 @@ export default model('Dish', new Schema({
         type: String,
         default: true
     },
-    author: {
-        type: Schema.Types.ObjectId,
-        ref: 'User'
-    },
+    author: String,
     products: [{
-        quantity: Number,
+        count: Number,
         product: {
             type: Schema.Types.ObjectId,
             ref: 'Product'
