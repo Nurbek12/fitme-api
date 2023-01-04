@@ -26,7 +26,9 @@ export default model('User', new Schema({
     experience: Number,
 
     sales: Array,
-    socialMedia: Array,
+
+    telegramLink: String,
+    instagramLink: String,
 
     disciples: [{
         type: Schema.Types.ObjectId,
