@@ -75,6 +75,18 @@ export const addProgramToUser = async (req, res) => {
     }
 }
 
+export const removeProgramToUser = async (req, res) => {
+    try{
+        await User.findByIdAndUpdate(req.params.id1, { $pull: {workouts: req.params.id2} }, { new: true })
+            .populate('workouts')
+            .exec((_, result) => {
+                res.status(200).json({ status: true, result: result.workouts, message: 'Успешно добавлено!' })
+            })
+    }catch(err){
+        console.log(err);
+        res.status(500).json({ status: false, message: 'Ошибка!' })
+    }
+}
 // !!!!!!!
 export const addExercise = async (req, res) => {
     try{

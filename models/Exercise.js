@@ -15,6 +15,11 @@ export default model('Exercise', new Schema({
         type: String,
         required: true
     },
+    authorid: {
+        type: Schema.Types.ObjectId,
+        ref: 'User'
+    },
+    metadescription: String,
     approach: Number,
     timing: Number,
     calory: Number,

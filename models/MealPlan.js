@@ -17,6 +17,10 @@ export default model('MealPlan', new Schema({
         type: String,
         required: true
     },
+    authorid: {
+        type: Schema.Types.ObjectId,
+        ref: 'User'
+    },
     carbohydrates: {
         percent: Number,
         value: Number
@@ -35,7 +39,6 @@ export default model('MealPlan', new Schema({
 
     plan: [{
         title: String,
-        recs: String,
         target: {
             c: Number,
             b: Number,
@@ -48,12 +51,15 @@ export default model('MealPlan', new Schema({
             j: Number,
             u: Number
         },
-        products: [{
-            count: Number,
-            product: {
-                type: Schema.Types.ObjectId,
-                ref: 'Product'
-            },
+        meal: [{
+            recs: String,
+            products: [{
+                count: Number,
+                product: {
+                    type: Schema.Types.ObjectId,
+                    ref: 'Product'
+                },
+            }],
         }]
     }],
     category: String,

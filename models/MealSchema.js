@@ -13,6 +13,10 @@ export default model('MealSchema', new Schema({
         type: String,
         required: true
     },
+    authorid: {
+        type: Schema.Types.ObjectId,
+        ref: 'User'
+    },
     carbohydrates: {
         type: Number,
         default: true

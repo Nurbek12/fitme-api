@@ -1,4 +1,5 @@
 import MealPlan from '../models/MealPlan.js'
+import User from '../models/User.js'
 
 export const getAll = async (req, res) => {
     try{
@@ -33,6 +34,32 @@ export const create = async (req, res) => {
             .populate("author", "name")
             .exec((_, result) => {
                 res.status(200).json({ status: true, result, message: 'Успешно добавлено!' })
+            })
+    }catch(err){
+        console.log(err);
+        res.status(500).json({ status: false, message: 'Ошибка!' })
+    }
+}
+
+export const addProgramToUser = async (req, res) => {
+    try{
+        await User.findByIdAndUpdate(req.params.id1, { $push: {mealplans: req.params.id2} }, { new: true })
+            .populate('mealplans')
+            .exec((_, result) => {
+                res.status(200).json({ status: true, result: result.mealplans, message: 'Успешно добавлено!' })
+            })
+    }catch(err){
+        console.log(err);
+        res.status(500).json({ status: false, message: 'Ошибка!' })
+    }
+}
+
+export const removeProgramToUser = async (req, res) => {
+    try{
+        await User.findByIdAndUpdate(req.params.id1, { $pull: {mealplans: req.params.id2} }, { new: true })
+            .populate('mealplans')
+            .exec((_, result) => {
+                res.status(200).json({ status: true, result: result.mealplans, message: 'Успешно добавлено!' })
             })
     }catch(err){
         console.log(err);

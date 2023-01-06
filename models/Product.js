@@ -9,6 +9,10 @@ export default model('Product', new Schema({
         type: String,
         required: true
     },
+    authorid: {
+        type: Schema.Types.ObjectId,
+        ref: 'User'
+    },
     image: String,
     carbohydrates: Number,
     fat: Number,

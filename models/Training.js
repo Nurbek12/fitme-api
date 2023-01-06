@@ -24,31 +24,22 @@ export default model('trainings', new Schema({
         required: true
     },
     image: {
-        type: String,
-        required: true
+        type: String
     },
     author: {
         type: String,
         required: true
     },
     exercises: [{
-        id: String,
         workout: [{
             exercise: {
                 type: Schema.Types.ObjectId,
                 ref: 'Exercise'
             },
-            sets: String,
-            
-            repeat: Number,
-            weigth: Number,
-            week: Array
+            approach: Number,
+            repeat: String,
         }],
     }],
-    author: {
-        type: String,
-        required: true
-    },
 }, {
     timestamps: true
 }))

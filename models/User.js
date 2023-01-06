@@ -38,14 +38,28 @@ export default model('User', new Schema({
         type: Schema.Types.ObjectId,
         ref: "User"
     }],
-    samples: [{}],
+    samples: [{
+        type: Schema.Types.ObjectId,
+        ref: "Samples"
+    }],
     mealplans: [{
         type: Schema.Types.ObjectId,
         ref: "MealPlan"
     }],
     workouts: [{
-        type: Schema.Types.ObjectId,
-        ref: "Training"
+        training: {
+            type: Schema.Types.ObjectId,
+            ref: "Training"
+        },
+        weekStatus: [{
+            statusText: String,
+            status: Boolean,
+            title: String
+        }],
+        data: {
+            type: Schema.Types.ObjectId,
+            ref: "TrainingData"
+        }
     }],
 }, {
     timestamps: true

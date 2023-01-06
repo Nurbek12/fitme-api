@@ -15,7 +15,7 @@ export const getAll = async (req, res) => {
 export const getAllUsers = async (req, res) => {
     try{
         const result = await User.find({ ...req.query, role: 'USER' })
-        .select('name email phonenumber male age mytrainers mealplans workouts');
+        .select('name email phonenumber male age mytrainers samples mealplans workouts');
         res.status(200).json({ status: true, result })
     }catch(err){
         console.log(err);
@@ -27,7 +27,7 @@ export const getAllUsers = async (req, res) => {
 export const getUser = async (req, res) => {
     try{
         const result = await User.findOne({_id: req.params.id, role: 'USER'})
-        .select('name email phonenumber male age mytrainers mealplans workouts')
+        .select('name email phonenumber male age mytrainers mealplans samples workouts')
         res.status(200).json({ status: true, result })
     }catch(err){
         console.log(err);
@@ -49,7 +49,7 @@ export const addUser = async (req, res) => {
 export const getAllTrainers = async (req, res) => {
     try{
         const result = await User.find({ ...req.query, role: 'TRAINER'})
-        .select('name email phonenumber city about image speciality formation male age experience socialMedia disciples mealplans workouts');
+        .select('name email phonenumber city about password image speciality formation male age experience socialMedia disciples mealplans workouts');
         res.status(200).json({ status: true, result })
     }catch(err){
         console.log(err);
@@ -60,7 +60,7 @@ export const getAllTrainers = async (req, res) => {
 export const getTrainer = async (req, res) => {
     try{
         const result = await User.find({ ...req.query, role: 'TRAINER'})
-        .select('name email phonenumber city about image speciality formation male age experience socialMedia disciples mealplans workouts');
+        .select('name email phonenumber city about password image speciality formation male age experience socialMedia disciples mealplans workouts');
         res.status(200).json({ status: true, result })
     }catch(err){
         console.log(err);
