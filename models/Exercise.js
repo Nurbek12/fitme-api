@@ -20,9 +20,6 @@ export default model('Exercise', new Schema({
         ref: 'User'
     },
     metadescription: String,
-    approach: Number,
-    timing: Number,
-    calory: Number,
     category: String,
     childcategory: String,
 }, {

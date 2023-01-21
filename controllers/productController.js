@@ -3,7 +3,7 @@ import { fileurl } from '../config/generatecode.js'
 
 export const getAll = async (req, res) => {
     try{
-        const result = await Product.find();
+        const result = await Product.find(req.query);
         res.status(200).json({ status: true, result })
     }catch(err){
         console.log(err);
@@ -20,7 +20,7 @@ export const getProduct = async (req, res) => {
         res.status(500).json({ status: false, message: 'Ошибка' })
     }
 }
- 
+
 export const add = async (req, res) => {
     try{
         if(req.file) req.body.image = fileurl(req, req.file.filename)

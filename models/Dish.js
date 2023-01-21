@@ -26,10 +26,7 @@ export default model('Dish', new Schema({
         default: true
     },
     author: String,
-    authorid: {
-        type: Schema.Types.ObjectId,
-        ref: 'User'
-    },
+    description: String,
     products: [{
         count: Number,
         product: {

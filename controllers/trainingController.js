@@ -1,6 +1,28 @@
 import Training from '../models/Training.js'
+import Trainingdata from '../models/TrainingData.js'
 import User from '../models/User.js'
 import { fileurl } from '../config/generatecode.js'
+
+function createTrainingDataTables(w, exs){
+    const weekStatus = w.map((el, i) => ({
+        id: i,
+        statusText: '',
+        status: false,
+        title: el
+    }))
+    const data = exs.map(({ workout }) => {
+        return Array(w.length*4).fill().map((el) => 
+            workout.map(({approach}) => {
+                const p = [];
+                for(let i=0; i<approach;i++){
+                    p.push({ repeat: 0, weight: 0 })
+                }
+                return p
+            }
+        ))
+    })
+    return { weekStatus, data }
+}
 
 export const getAll = async (req, res) => {
     try{
@@ -37,10 +59,9 @@ export const find = async (req, res) => {
 export const create = async (req, res) => {
     try{
         if(req.body.exercises) req.body.exercises = JSON.parse(req.body.exercises);
+        req.body.weeks = ['Неделя 1-4', 'Неделя 5-8', 'Неделя 9-12'];
         if(req.file) req.body.image = fileurl(req, req.file.filename)
-        const { _id } = await Training.create(req.body);
-        await Training.findById(_id)
-            .then((result) => {
+        await Training.create(req.body).then((result) => {
                 res.status(200).json({ status: true, result, message: 'Успешно добавлено!' })
             })
     }catch(err){
@@ -52,6 +73,7 @@ export const create = async (req, res) => {
 export const edit = async (req, res) => {
     try{
         if(req.file) req.body.image = fileurl(req, req.file.filename)
+        if(req.body.exercises) req.body.exercises = JSON.parse(req.body.exercises);
         await Training.findByIdAndUpdate(req.params.id, { $set: req.body }, { new: true })
             .exec((_, result) => {
                 res.status(200).json({ status: true, result, message: 'Успешно отредактировано!' })
@@ -64,8 +86,16 @@ export const edit = async (req, res) => {
 
 export const addProgramToUser = async (req, res) => {
     try{
-        await User.findByIdAndUpdate(req.params.id1, { $push: {workouts: req.params.id2} }, { new: true })
-            .populate('workouts')
+        const { weeks, exercises } = await Training.findOne({ _id: req.params.id2 });
+        const { _id } = await Trainingdata.create(createTrainingDataTables(weeks, exercises));
+        await User.findByIdAndUpdate(req.params.id1, { $push: {workouts: { training: req.params.id2, data: _id}} }, { new: true })
+            .populate([{
+                path: 'workouts.training',
+                model: Training
+            }, {
+                path: 'workouts.data',
+                model: 'TrainingData'
+            }])
             .exec((_, result) => {
                 res.status(200).json({ status: true, result: result.workouts, message: 'Успешно добавлено!' })
             })
@@ -119,6 +149,23 @@ export const removeExercise = async (req, res) => {
         res.status(500).json({ status: false, message: 'Ошибка!' })
     }
 }
+
+export const editThisData = async (req, res) => {
+    try{
+        const { t, w, e, i, dt } = req.body;
+        await Trainingdata.findOne({_id: req.params.id}).then(doc => {
+            Object.assign(doc.data[t][w][e][i], dt);
+            doc.markModified('data')
+            doc.save().then(result => {
+                res.status(200).json({ status: true, result, message: 'Успешно отредактировано!' })
+            });
+        })
+    }catch(err){
+        console.log(err);
+        res.status(500).json({ status: false, message: 'Ошибка!' })
+    }
+}
+
 
 export const delet = async (req, res) => {
     try{

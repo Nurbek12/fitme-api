@@ -5,6 +5,10 @@ export default model('FoodConsumed', new Schema({
         type: String,
         required: true
     },
+    category: {
+        type: String,
+        required: true,
+    },
     surplus: {
         calory: Number,
         b: Number,

@@ -18,11 +18,16 @@ export default model('Product', new Schema({
     fat: Number,
     proteins: Number,
     calories: Number,
+    portion: Number,
     category: {
         type: String,
         default: true
     },
     childcategory: String,
+    visibledb: {
+        type: Boolean,
+        default: false
+    },
 }, {
     timestamps: true
 }))

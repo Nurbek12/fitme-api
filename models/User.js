@@ -25,10 +25,12 @@ export default model('User', new Schema({
     age: Number,
     experience: Number,
 
-    sales: Array,
-
     telegramLink: String,
     instagramLink: String,
+    pro_acc: {
+        type: Boolean,
+        default: false
+    },
 
     disciples: [{
         type: Schema.Types.ObjectId,
@@ -37,10 +39,6 @@ export default model('User', new Schema({
     mytrainers: [{
         type: Schema.Types.ObjectId,
         ref: "User"
-    }],
-    samples: [{
-        type: Schema.Types.ObjectId,
-        ref: "Samples"
     }],
     mealplans: [{
         type: Schema.Types.ObjectId,
@@ -51,16 +49,15 @@ export default model('User', new Schema({
             type: Schema.Types.ObjectId,
             ref: "Training"
         },
-        weekStatus: [{
-            statusText: String,
-            status: Boolean,
-            title: String
-        }],
         data: {
             type: Schema.Types.ObjectId,
             ref: "TrainingData"
         }
     }],
+    purchases_workout: [{
+        type: Schema.Types.ObjectId,
+        ref: "Training"
+    }]
 }, {
     timestamps: true
 }))

@@ -1,6 +1,8 @@
 import { Router } from 'express'
 import { auth } from '../middleware/authMilddleware.js'
-import { getAll, find, create, edit, addProgramToUser, removeProgramToUser, addExercise, removeExercise, delet } from '../controllers/trainingController.js'
+import { getAll, find, create, edit, addProgramToUser, 
+    removeProgramToUser, addExercise, 
+    removeExercise, delet, editThisData } from '../controllers/trainingController.js'
 import upload from '../middleware/uploadMilddleware.js'
 
 export default Router()
@@ -16,5 +18,7 @@ export default Router()
 
     .put('/addexer/:id1/:id2', auth, addExercise)
     .put('/removeexer/:id', auth, removeExercise)
+
+    .put('/editdata/:id', auth, editThisData)
 
     .delete('/delete/:id', auth, delet)

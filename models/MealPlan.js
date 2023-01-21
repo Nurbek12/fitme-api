@@ -39,27 +39,9 @@ export default model('MealPlan', new Schema({
 
     plan: [{
         title: String,
-        target: {
-            c: Number,
-            b: Number,
-            j: Number,
-            u: Number
-        },
-        actual: {
-            c: Number,
-            b: Number,
-            j: Number,
-            u: Number
-        },
         meal: [{
-            recs: String,
-            products: [{
-                count: Number,
-                product: {
-                    type: Schema.Types.ObjectId,
-                    ref: 'Product'
-                },
-            }],
+            type: Schema.Types.ObjectId,
+            ref: 'ChildPlan'
         }]
     }],
     category: String,

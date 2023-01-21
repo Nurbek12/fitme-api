@@ -7,11 +7,15 @@ export const getMy = async (req, res) => {
         await Submit.find({[role=="USER"?"user_id":"trainer_id"]: req.params.id})
         .populate([{
             path: 'user',
-            model: 'User'
+            model: 'User',
+            select: ['name', 'email',  'phonenumber',  'male', 'age']
         }, {
             path: 'trainer',
-            model: 'User'
-        }]).exec((_, result) => {
+            model: 'User',
+            select: ['name', 'email',  'phonenumber',  'male', 'age']
+        }])
+        .sort({ _id: -1 })
+        .exec((_, result) => {
             res.status(200).json({ status: true, result })
         })
     }catch(err){
@@ -50,7 +54,15 @@ export const accept = async (req, res) => {
         // const {role} = await User.findOne({_id: req.body.user});
         // if(role!=="TRAINER") return res.status(501).json({ status: false, message: 'Вы не можете принять заявку!' })
         const result = await Submit.findByIdAndUpdate(req.params.id, { status: 'принято' }, { new: true })
-        console.log(result);
+        .populate([{
+            path: 'user',
+            model: 'User',
+            select: ['name', 'email',  'phonenumber',  'male', 'age']
+        }, {
+            path: 'trainer',
+            model: 'User',
+            select: ['name', 'email',  'phonenumber',  'male', 'age']
+        }])
         await User.findByIdAndUpdate(result.user, { $push: { mytrainers: result.trainer } })
         await User.findByIdAndUpdate(result.trainer, { $push: { disciples: result.user } })
         res.status(200).json({ status: true, result, message: "Заявка успешно принято!" })
@@ -64,7 +76,16 @@ export const cancel = async (req, res) => {
     try{
         // const {role} = await User.findOne({_id: req.body.user});
         // if(role!=="TRAINER") return res.status(501).json({ status: false, message: 'Вы не можете принять заявку!' })
-        const result = await Submit.findByIdAndUpdate(req.params.id, { status: 'отказано' }, { new: true });
+        const result = await Submit.findByIdAndUpdate(req.params.id, { status: 'отказано' }, { new: true })
+        .populate([{
+            path: 'user',
+            model: 'User',
+            select: ['name', 'email',  'phonenumber',  'male', 'age']
+        }, {
+            path: 'trainer',
+            model: 'User',
+            select: ['name', 'email',  'phonenumber',  'male', 'age']
+        }]);
         res.status(200).json({ status: true, result, message: "Заявка отказано!" })
     }catch(err){
         console.log(err);

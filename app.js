@@ -19,7 +19,6 @@ import trainingroutes from "./routes/training.js"
 import submitroutes from "./routes/submits.js"
 import categotyroutes from "./routes/category.js"
 import foodcroutes from "./routes/foodConsumed.js"
-// import './config/formula.js'
 
 const dirname = url.fileURLToPath(new URL('.', import.meta.url));
 const app = express();
@@ -27,15 +26,12 @@ const server = createServer(app)
 
 PassportApp(app)
 
-// app.set('view engine', 'ejs')
-
 app.use(cors())
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 app.use(express.static(join(dirname, 'files')))
 
 app.use(routes)
-
 app.use('/auth', authroutes)
 app.use('/user', userroutes)
 app.use('/product', productroutes)

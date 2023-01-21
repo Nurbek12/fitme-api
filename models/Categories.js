@@ -5,7 +5,7 @@ export default model('Category', new Schema({
     theme: {
         type: String,
         required: true,
-        enum: ['mealplan','product','exercise','workout']
+        enum: ['mealplan','product','exercise','workout','dish']
     },
     parent: {
         type: Schema.Types.ObjectId,

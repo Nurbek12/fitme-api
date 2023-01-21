@@ -10,7 +10,7 @@ export default model('trainings', new Schema({
         required: true
     },
     metadescription: String,
-    weeks: Number,
+    weeks: Array,
     price: {
         type: String,
         required: true
