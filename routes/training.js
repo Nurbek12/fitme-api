@@ -1,8 +1,7 @@
 import { Router } from 'express'
 import { auth } from '../middleware/authMilddleware.js'
-import { getAll, find, create, edit, addProgramToUser, 
-    removeProgramToUser, addExercise, 
-    removeExercise, delet, editThisData } from '../controllers/trainingController.js'
+import { getAll, find, create, edit, addWeeklyToUser, 
+    removeProgramToUser, delet, editThisData } from '../controllers/trainingController.js'
 import upload from '../middleware/uploadMilddleware.js'
 
 export default Router()
@@ -13,11 +12,11 @@ export default Router()
 
     .put('/edit/:id', auth, upload.single('image'), edit)
 
-    .put('/addtouser/:id1/:id2', auth, addProgramToUser)
+    .put('/addtouser/:id1/:id2', auth, addWeeklyToUser)
     .put('/removetouser/:id1/:id2', auth, removeProgramToUser)
 
-    .put('/addexer/:id1/:id2', auth, addExercise)
-    .put('/removeexer/:id', auth, removeExercise)
+    // .put('/addexer/:id1/:id2', auth, addExercise)
+    // .put('/removeexer/:id', auth, removeExercise)
 
     .put('/editdata/:id', auth, editThisData)
 

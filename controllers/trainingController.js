@@ -1,6 +1,6 @@
 import Training from '../models/Training.js'
 import Trainingdata from '../models/TrainingData.js'
-import User from '../models/User.js'
+import UserDetail from '../models/UserDetails.js'
 import { fileurl } from '../config/generatecode.js'
 
 function createTrainingDataTables(w, exs){
@@ -62,6 +62,9 @@ export const create = async (req, res) => {
         req.body.weeks = ['Неделя 1-4', 'Неделя 5-8', 'Неделя 9-12'];
         if(req.file) req.body.image = fileurl(req, req.file.filename)
         await Training.create(req.body).then((result) => {
+                if(req.query.user){
+                    UserDetails.findByIdAndUpdate({user_id: req.query.user}, { $push: {mealplans: result._id} })
+                }
                 res.status(200).json({ status: true, result, message: 'Успешно добавлено!' })
             })
     }catch(err){
@@ -84,11 +87,11 @@ export const edit = async (req, res) => {
     }
 }
 
-export const addProgramToUser = async (req, res) => {
+export const addWeeklyToUser = async (req, res) => {
     try{
         const { weeks, exercises } = await Training.findOne({ _id: req.params.id2 });
         const { _id } = await Trainingdata.create(createTrainingDataTables(weeks, exercises));
-        await User.findByIdAndUpdate(req.params.id1, { $push: {workouts: { training: req.params.id2, data: _id}} }, { new: true })
+        await UserDetail.findByIdAndUpdate({user_id: req.params.id1}, { $push: {week_workouts: { training: req.params.id2, data: _id}} }, { new: true })
             .populate([{
                 path: 'workouts.training',
                 model: Training
@@ -97,7 +100,7 @@ export const addProgramToUser = async (req, res) => {
                 model: 'TrainingData'
             }])
             .exec((_, result) => {
-                res.status(200).json({ status: true, result: result.workouts, message: 'Успешно добавлено!' })
+                res.status(200).json({ status: true, result: result.week_workouts, message: 'Успешно добавлено!' })
             })
     }catch(err){
         console.log(err);
@@ -107,7 +110,7 @@ export const addProgramToUser = async (req, res) => {
 
 export const removeProgramToUser = async (req, res) => {
     try{
-        await User.findByIdAndUpdate(req.params.id1, { $pull: {workouts: req.params.id2} }, { new: true })
+        await User.findByIdAndUpdate(req.params.id1, { $pull: {week_workouts: req.params.id2} }, { new: true })
             .populate('workouts')
             .exec((_, result) => {
                 res.status(200).json({ status: true, result: result.workouts, message: 'Успешно добавлено!' })
@@ -117,38 +120,38 @@ export const removeProgramToUser = async (req, res) => {
         res.status(500).json({ status: false, message: 'Ошибка!' })
     }
 }
-// !!!!!!!
-export const addExercise = async (req, res) => {
-    try{
-        await Training.findByIdAndUpdate(req.params.id1, { $push: { exercises: req.body } }, { new: true })
-            .populate([{
-                path: 'exercises.workouts.exercise',
-                model: 'Exercise'
-            }])
-            .exec((_, result) => {
-                res.status(200).json({ status: true, result, message: 'Успешно добавлено!' })
-            })
-    }catch(err){
-        console.log(err);
-        res.status(500).json({ status: false, message: 'Ошибка!' })
-    }
-}
-// !!!!!!!
-export const removeExercise = async (req, res) => {
-    try{
-        await Training.findByIdAndUpdate(req.params.id, { $pull: { exercises: req.body.id } }, { new: true })
-            .populate([{
-                path: 'exercises.workouts.exercise',
-                model: 'Exercise'
-            }])
-            .exec((_, result) => {
-                res.status(200).json({ status: true, result, message: 'Успешно удалено!' })
-            })
-    }catch(err){
-        console.log(err);
-        res.status(500).json({ status: false, message: 'Ошибка!' })
-    }
-}
+
+// export const addExercise = async (req, res) => {
+//     try{
+//         await Training.findByIdAndUpdate(req.params.id1, { $push: { exercises: req.body } }, { new: true })
+//             .populate([{
+//                 path: 'exercises.workouts.exercise',
+//                 model: 'Exercise'
+//             }])
+//             .exec((_, result) => {
+//                 res.status(200).json({ status: true, result, message: 'Успешно добавлено!' })
+//             })
+//     }catch(err){
+//         console.log(err);
+//         res.status(500).json({ status: false, message: 'Ошибка!' })
+//     }
+// }
+
+// export const removeExercise = async (req, res) => {
+//     try{
+//         await Training.findByIdAndUpdate(req.params.id, { $pull: { exercises: req.body.id } }, { new: true })
+//             .populate([{
+//                 path: 'exercises.workouts.exercise',
+//                 model: 'Exercise'
+//             }])
+//             .exec((_, result) => {
+//                 res.status(200).json({ status: true, result, message: 'Успешно удалено!' })
+//             })
+//     }catch(err){
+//         console.log(err);
+//         res.status(500).json({ status: false, message: 'Ошибка!' })
+//     }
+// }
 
 export const editThisData = async (req, res) => {
     try{

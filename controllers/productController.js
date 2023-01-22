@@ -1,4 +1,5 @@
 import Product from '../models/Product.js'
+import UserDetail from '../models/UserDetails.js'
 import { fileurl } from '../config/generatecode.js'
 
 export const getAll = async (req, res) => {
@@ -25,6 +26,9 @@ export const add = async (req, res) => {
     try{
         if(req.file) req.body.image = fileurl(req, req.file.filename)
         const result = await Product.create(req.body);
+        if(!result.visibledb){
+            await UserDetail.findOneAndUpdate({ user_id: result.author }, { $push: { prodcuts: result._id } })
+        }
         res.status(200).json({ status: true, result, message: 'Успешно добавлено!' })
     }catch(err){
         console.log(err);
@@ -46,6 +50,9 @@ export const edit = async (req, res) => {
 export const delet = async (req, res) => {
     try{
         const result = await Product.findByIdAndDelete(req.params.id);
+        if(!result.visibledb){
+            await UserDetail.findOneAndUpdate({ user_id: result.author }, { $pull: { prodcuts: result._id } })
+        }
         res.status(200).json({ status: true, result, message: 'Успешно удалено!' })
     }catch(err){
         console.log(err);

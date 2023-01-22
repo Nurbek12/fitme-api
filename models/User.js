@@ -31,33 +31,6 @@ export default model('User', new Schema({
         type: Boolean,
         default: false
     },
-
-    disciples: [{
-        type: Schema.Types.ObjectId,
-        ref: "User"
-    }],
-    mytrainers: [{
-        type: Schema.Types.ObjectId,
-        ref: "User"
-    }],
-    mealplans: [{
-        type: Schema.Types.ObjectId,
-        ref: "MealPlan"
-    }],
-    workouts: [{
-        training: {
-            type: Schema.Types.ObjectId,
-            ref: "Training"
-        },
-        data: {
-            type: Schema.Types.ObjectId,
-            ref: "TrainingData"
-        }
-    }],
-    purchases_workout: [{
-        type: Schema.Types.ObjectId,
-        ref: "Training"
-    }]
 }, {
     timestamps: true
 }))

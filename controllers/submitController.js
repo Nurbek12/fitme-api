@@ -1,5 +1,6 @@
 import Submit from "../models/Submit.js";
 import User from '../models/User.js'
+import UserDetails from "../models/UserDetails.js";
 
 export const getMy = async (req, res) => {
     try{
@@ -63,8 +64,8 @@ export const accept = async (req, res) => {
             model: 'User',
             select: ['name', 'email',  'phonenumber',  'male', 'age']
         }])
-        await User.findByIdAndUpdate(result.user, { $push: { mytrainers: result.trainer } })
-        await User.findByIdAndUpdate(result.trainer, { $push: { disciples: result.user } })
+        await UserDetails.findOneAndUpdate({user_id: result.user}, { $push: { mytrainers: result.trainer } })
+        await UserDetails.findOneAndUpdate({user_id: result.trainer}, { $push: { disciples: result.user } })
         res.status(200).json({ status: true, result, message: "Заявка успешно принято!" })
     }catch(err){
         console.log(err);

@@ -19,6 +19,7 @@ import trainingroutes from "./routes/training.js"
 import submitroutes from "./routes/submits.js"
 import categotyroutes from "./routes/category.js"
 import foodcroutes from "./routes/foodConsumed.js"
+import userdetailroutes from "./routes/userDetails.js"
 
 const dirname = url.fileURLToPath(new URL('.', import.meta.url));
 const app = express();
@@ -43,6 +44,7 @@ app.use('/training', trainingroutes)
 app.use('/submit', submitroutes)
 app.use('/category', categotyroutes)
 app.use('/foodate', foodcroutes)
+app.use('/my', userdetailroutes)
 
 server.listen(port, () => {
     console.log('Server started...')

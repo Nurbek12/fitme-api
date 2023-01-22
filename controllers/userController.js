@@ -1,4 +1,5 @@
 import User from "../models/User.js"
+import UserDetails from "../models/UserDetails.js"
 import { fileurl } from '../config/generatecode.js'
 import { Types } from "mongoose"
 
@@ -24,11 +25,9 @@ export const getAllUsers = async (req, res) => {
     }
 }
 
-
-
 export const getMy = async (req, res) => {
     try{
-        const myusers = await User.findOne({_id: req.params.id})
+        const myusers = await UserDetails.findOne({user_id: req.params.id})
         const result = await User.aggregate([{
             $match: { _id: { $in: myusers.disciples.map(el => Types.ObjectId(el)) } },
         }, {
@@ -54,8 +53,8 @@ export const getMy = async (req, res) => {
 
 export const deletDisc = async (req, res) => {
     try{
-        await User.findByIdAndUpdate(req.params.id1, { $pull: { disciples: req.params.id2 } })
-        await User.findByIdAndUpdate(req.params.id2, { $pull: { mytrainers: req.params.id1 } })
+        await UserDetails.findOneAndUpdate({user_id: req.params.id1}, { $pull: { disciples: req.params.id2 } })
+        await UserDetails.findOneAndUpdate({user_id: req.params.id2}, { $pull: { mytrainers: req.params.id1 } })
         res.status(200).json({ status: true, message: 'Успешно отредактировано!' })
     }catch(err){
         console.log(err);
@@ -78,6 +77,7 @@ export const getUser = async (req, res) => {
 export const addUser = async (req, res) => {
     try{
         const result = await User.create({...req.body, role: 'USER'})
+        await UserDetails.create({ user_id: result._id })
         res.status(200).json({ status: true, result, message: 'Успешно добавлено!' })
     }catch(err){
         console.log(err);
@@ -112,6 +112,7 @@ export const addTrainer = async (req, res) => {
     try{
         if(req.file) req.body.image = fileurl(req, req.file.filename)
         const result = await User.create({...req.body, role: 'TRAINER'})
+        await UserDetails.create({ user_id: result._id })
         res.status(200).json({ status: true, result, message: 'Успешно добавлено!' })
     }catch(err){
         console.log(err);
