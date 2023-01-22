@@ -155,25 +155,21 @@ export const addAdmin = async (req, res) => {
 // edit
 export const editUser = async (req, res) => {
     try{
-        let roleSelect, rolePopulate;
+        let roleSelect;
         switch(req.body.role){
             case 'ADMIN': 
                 roleSelect = 'name email phonenumber password role'
-                rolePopulate = []
                 break;
             case 'TRAINER': 
                 roleSelect = 'name email phonenumber city about password role image speciality formation male age experience telegramLink instagramLink disciples mealplans workouts'
-                rolePopulate = ['disciples', 'mealplans', 'workouts']
                 break;
             case 'USER': 
                 roleSelect = 'name email phonenumber male age mytrainers mealplans workouts role'
-                rolePopulate = ['mytrainers', 'mealplans', 'workouts']
                 break;
         }
         if(req.file) req.body.image = fileurl(req, req.file.filename)
         await User.findByIdAndUpdate(req.params.id, { $set: req.body }, { new :true })
             .select(roleSelect)
-            .populate(rolePopulate)
             .exec((_, result) => {
                 res.status(200).json({ status: true, result, message: 'Успешно отредактировано!' })
             })
