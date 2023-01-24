@@ -123,43 +123,11 @@ export const removeProgramToUser = async (req, res) => {
     }
 }
 
-// export const addExercise = async (req, res) => {
-//     try{
-//         await Training.findByIdAndUpdate(req.params.id1, { $push: { exercises: req.body } }, { new: true })
-//             .populate([{
-//                 path: 'exercises.workouts.exercise',
-//                 model: 'Exercise'
-//             }])
-//             .exec((_, result) => {
-//                 res.status(200).json({ status: true, result, message: 'Успешно добавлено!' })
-//             })
-//     }catch(err){
-//         console.log(err);
-//         res.status(500).json({ status: false, message: 'Ошибка!' })
-//     }
-// }
-
-// export const removeExercise = async (req, res) => {
-//     try{
-//         await Training.findByIdAndUpdate(req.params.id, { $pull: { exercises: req.body.id } }, { new: true })
-//             .populate([{
-//                 path: 'exercises.workouts.exercise',
-//                 model: 'Exercise'
-//             }])
-//             .exec((_, result) => {
-//                 res.status(200).json({ status: true, result, message: 'Успешно удалено!' })
-//             })
-//     }catch(err){
-//         console.log(err);
-//         res.status(500).json({ status: false, message: 'Ошибка!' })
-//     }
-// }
-
 export const editThisData = async (req, res) => {
     try{
-        const { t, w, e, i, dt } = req.body;
+        const { t, w, e, i, data } = req.body;
         await Trainingdata.findOne({_id: req.params.id}).then(doc => {
-            Object.assign(doc.data[t][w][e][i], dt);
+            Object.assign(doc.data[t][w][e][i], data);
             doc.markModified('data')
             doc.save().then(result => {
                 res.status(200).json({ status: true, result, message: 'Успешно отредактировано!' })
@@ -170,7 +138,6 @@ export const editThisData = async (req, res) => {
         res.status(500).json({ status: false, message: 'Ошибка!' })
     }
 }
-
 
 export const delet = async (req, res) => {
     try{
