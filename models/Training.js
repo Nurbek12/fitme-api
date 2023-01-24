@@ -30,6 +30,14 @@ export default model('trainings', new Schema({
         type: String,
         required: true
     },
+    authorid: {
+        type: Schema.Types.ObjectId,
+        ref: 'User'
+    },
+    visibledb: {
+        type: Boolean,
+        default: true
+    },
     exercises: [{
         workout: [{
             exercise: {

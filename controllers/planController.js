@@ -4,7 +4,11 @@ import UserDetails from '../models/UserDetails.js'
 
 export const getAll = async (req, res) => {
     try{
-        await MealPlan.find()
+        if(req.query?.user){
+            const resl = await UserDetails.findOne({ user_id: req.query.user });
+            Object.assign(req.query, { _id: { $nin: resl.mealplans } })
+        }
+        await MealPlan.find(req.query)
             .populate([{
                 path: 'plan.meal',
                 model: 'ChildPlan',
@@ -48,7 +52,7 @@ export const create = async (req, res) => {
         await MealPlan.create(req.body)
             .then((result) => {
                 if(req.query.user){
-                    UserDetails.findOneAndUpdate({user_id: req.query.user}, { $push: {mealplans: result._id} })
+                    UserDetails.findOneAndUpdate({user_id: req.query.user}, { $push: {mealplans: result._id} }).then(() => console.log('success'))
                 }
                 res.status(200).json({ status: true, result, message: 'Успешно добавлено!' })
             })
@@ -187,7 +191,10 @@ export const edit = async (req, res) => {
 export const delet = async (req, res) => {
     try{
         await MealPlan.findByIdAndDelete(req.params.id)
-        .then(() => {
+        .then((result) => {
+            if(req.query.user){
+                UserDetails.findOneAndUpdate({ user_id: req.query.user }, { $pull: { mealplans: result._id } })
+            }
             res.status(200).json({ status: true, message: 'Успешно удалено!' })
         })
     }catch(err){

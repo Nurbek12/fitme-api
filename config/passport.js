@@ -1,10 +1,17 @@
 import passport from 'passport'
 import { Strategy, ExtractJwt } from 'passport-jwt'
+import AppleStrategy from 'passport-apple'
 import jwt from 'jsonwebtoken'
 import GoogleStrategy from 'passport-google-oauth2'
 import FacebookStrategy from 'passport-facebook'
-import { secret, apiURL, serverURL, googleClient, googleSecret, facebookAppId, facebookSecret } from './keys.js'
+import { secret, googleClient, googleSecret, facebookAppId, facebookSecret, appleClient, appleKey, appleTeam } from './keys.js'
 import User from '../models/User.js'
+
+import url from "url"
+import fs from 'fs'
+import path from 'path'
+
+const dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
 passport.use('jwt', new Strategy({
     jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -23,7 +30,7 @@ passport.use('jwt', new Strategy({
 passport.use('google', new GoogleStrategy({
     clientID: googleClient,
     clientSecret: googleSecret,
-    callbackURL: `${serverURL}/${apiURL}`
+    callbackURL: `http://localhost:3800/auth/google/callback`
 }, (accessToken, refreshToken, profile, done) => {
     User.findOne({ email: profile.email })
         .then(user => {
@@ -61,53 +68,100 @@ passport.use('google', new GoogleStrategy({
 ));
 
 passport.use('facebook', new FacebookStrategy(
-        {
-            clientID: facebookAppId,
-            clientSecret: facebookSecret,
-            callbackURL: `${serverURL}/auth/facebook/callback`,
-            profileFields: [
-                'id',
-                'displayName',
-                'name',
-                'emails',
-                'picture.type(large)'
-            ]
-        },
-        (accessToken, refreshToken, profile, done) => {
-            User.findOne({ facebookId: profile.id })
-                .then(user => {
-                    if (!user) {
-                        const newUser = new User({
-                            provider: 'facebook',
-                            socialID: profile.id,
-                            email: profile.emails ? profile.emails[0].value : null,
-                            name: profile.name.givenName + profile.name.familyName,
-                            image: profile.photos[0].value,
-                            password: null
-                        });
-        
-                        newUser.save();
-                        jwt.sign(JSON.stringify(newUser._doc),
-                            secret, {}, (err, token) => {
-                                if (err) throw err;
-                                return done(null, { user: newUser._doc, token });
-                            }
-                        );
-                    } else {
-                        jwt.sign(JSON.stringify(user),
-                            secret, {}, (err, token) => {
-                                if (err) throw err;
-                                return done(null, { user, token });
-                            }
-                        );
-                    }
-                })
-                .catch(err => {
-                    return done(err, false);
-                });
-        }
-    )
+    {
+        clientID: facebookAppId,
+        clientSecret: facebookSecret,
+        callbackURL: `http://localhost:3800/auth/facebook/callback`,
+        profileFields: [
+            'id',
+            'displayName',
+            'name',
+            'emails',
+            'picture.type(large)'
+        ]
+    },
+    (accessToken, refreshToken, profile, done) => {
+        User.findOne({ socialID: profile.id })
+            .then(user => {
+                if (!user) {
+                    const newUser = new User({
+                        provider: 'facebook',
+                        socialID: profile.id,
+                        email: profile.emails ? profile.emails[0].value : "",
+                        name: profile.name.givenName + profile.name.familyName,
+                        image: profile.photos[0].value,
+                        password: null
+                    });
+
+                    newUser.save();
+                    jwt.sign(JSON.stringify(newUser._doc),
+                        secret, {}, (err, token) => {
+                            if (err) throw err;
+                            return done(null, { user: newUser._doc, token });
+                        }
+                    );
+                } else {
+                    jwt.sign(JSON.stringify(user),
+                        secret, {}, (err, token) => {
+                            if (err) throw err;
+                            return done(null, { user, token });
+                        }
+                    );
+                }
+            })
+            .catch(err => {
+                return done(err, false);
+            });
+    }
+)
 );
+
+passport.use('apple', new AppleStrategy({
+    clientID: appleClient,
+    teamID: appleTeam,
+    keyID: appleKey,
+    key: fs.readFileSync(path.join(dirname, 'AuthKey_1234567890.p8')),
+    callbackURL: 'http://localhost:3800/auth/apple/callback',
+    scope: ['name', 'email']
+    // clientID: "1321321",
+    // teamID: "",
+    // callbackURL: "",
+    // keyID: "",
+    // privateKeyLocation: "",
+    // passReqToCallback: true
+}, function (req, accessToken, refreshToken, idToken, profile, cb) {
+    User.findOne({ socialID: profile.id })
+        .then(user => {
+            console.log(profile);
+            if (!user) {
+                const newUser = new User({
+                    provider: 'apple',
+                    socialID: profile.id,
+                    email: profile.email,
+                    name: profile.name.firstName + " " + profile.name.lastName,
+                });
+
+                // newUser.save();
+                jwt.sign(JSON.stringify(newUser._doc),
+                    secret, {}, (err, token) => {
+                        if (err) throw err;
+                        return done(null, { user: newUser._doc, token });
+                    }
+                );
+            } else {
+                jwt.sign(JSON.stringify(user),
+                    secret, {}, (err, token) => {
+                        if (err) throw err;
+                        return done(null, { user, token });
+                    }
+                );
+            }
+        })
+        .catch(err => {
+            return done(err, false);
+        });
+    cb(null, idToken);
+}))
 
 export default async (app) => {
     app
@@ -118,5 +172,9 @@ export default async (app) => {
 
         .get('/auth/facebook', passport.authenticate('facebook', { scope: ['profile', 'email'], session: false }))
         .get('/auth/facebook/callback', passport.authenticate('facebook', { failureRedirect: '/', session: false }),
+            (_, res) => res.status(200).json(res.req.user))
+
+        .get('/auth/apple', passport.authenticate('apple', { session: false }))
+        .get('/auth/apple/callback', passport.authenticate('apple', { failureRedirect: '/', session: false }),
             (_, res) => res.status(200).json(res.req.user))
 }

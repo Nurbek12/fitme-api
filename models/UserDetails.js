@@ -20,7 +20,7 @@ export default model('UserDetail', new Schema({
         type: Schema.Types.ObjectId,
         ref: "Exercise"
     }],
-    prodcuts: [{
+    products: [{
         type: Schema.Types.ObjectId,
         ref: "Product"
     }],

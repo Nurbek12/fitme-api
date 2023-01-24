@@ -17,6 +17,10 @@ export const googleSecret = process.env.GOOGLE_SECRET_KEY
 export const facebookAppId = process.env.FACEBOOK_APP_ID
 export const facebookSecret = process.env.FACEBOOK_SECRET
 
+export const appleClient = process.env.APPLE_CLIENT
+export const appleTeam = process.env.APPLE_TEAM
+export const appleKey = process.env.APPLE_KEY
+
 // export const stripe_pub = process.env.STRIPE_PUB
 // export const stripe_priv = process.env.STRIPE_PRIV
 

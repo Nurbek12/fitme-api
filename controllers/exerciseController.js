@@ -1,8 +1,13 @@
 import Exercise from '../models/Exercise.js'
+import UserDetails from '../models/UserDetails.js'
 import { fileurl } from '../config/generatecode.js'
 
 export const getAll = async (req, res) => {
     try{
+        if(req.query?.user){
+            const resl = await UserDetails.findOne({ user_id: req.query.user });
+            Object.assign(req.query, { _id: { $nin: resl.exercises } })
+        }
         const result = await Exercise.find(req.query);
         res.status(200).json({ status: true, result })
     }catch(err){
@@ -26,7 +31,7 @@ export const getForArray = async (req, res) => {
 
 export const getExercise = async (req, res) => {
     try{
-        const result = await Exercise.find(req.query);
+        const result = await Exercise.findOne(req.query);
         res.status(200).json({ status: true, result })
     }catch(err){
         console.log(err);
@@ -48,10 +53,6 @@ export const add = async (req, res) => {
 
 export const edit = async (req, res) => {
     try{
-        // if(req.files){
-        //     req.body.image = fileurl(req, req.files.image[0].filename)
-        //     req.body.video = fileurl(req, req.files.video[0].filename)
-        // }
         if(req.files?.image) req.body.image = fileurl(req, req.files.image[0].filename)
         if(req.files?.video) req.body.video = fileurl(req, req.files.video[0].filename)
         const result = await Exercise.findByIdAndUpdate(req.params.id, { $set: req.body }, { new: true });

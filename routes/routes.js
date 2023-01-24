@@ -1,9 +1,8 @@
 import { Router } from 'express'
 import { auth } from '../middleware/authMilddleware.js'
 import Training from '../models/Training.js'
-import Product from '../models/Product.js'
-import Exercise from '../models/Exercise.js'
 import User from '../models/User.js'
+import UserDetails from '../models/UserDetails.js'
 import Plan from '../models/MealPlan.js'
 
 export default Router()
@@ -12,8 +11,8 @@ export default Router()
             const users = (await User.find({ role: "USER" })).length
             const trainers = (await User.find({ role: "TRAINER" })).length
             // const admins = (await User.find({ role: "ADMIN" })).length
-            const exercises = (await Training.find()).length
-            const mealplans = (await Plan.find()).length
+            const exercises = (await Training.find({ visibledb: true })).length
+            const mealplans = (await Plan.find({ visibledb: true })).length
             res.status(200).json({ status: true, result: {users,trainers,exercises,mealplans} })
         }catch(err){
             console.log(err);
@@ -22,13 +21,12 @@ export default Router()
     })
     .get('/getmyinfo/:id', auth, async (req, res) => {
         try{
-            const trainer = await User.findOne({_id: req.params.id});
-            const users = (await User.find({ role: "USER" })).length
-            const exercises = (await Exercise.find({ author: trainer.name })).length
-            const workouts = (await Training.find({ author: trainer.name })).length
-            const mealplans = (await Plan.find({ author: trainer.name })).length
-            const products = (await Product.find({ author: trainer.name })).length
-            res.status(200).json({ status: true, result: {users,products,workouts,exercises,mealplans} })
+            const resl = await UserDetails.findOne({ user_id: req.params.id })
+            const users = resl.disciples.length;
+            const workouts = resl.workouts.length
+            const mealplans = resl.mealplans.length
+            const products = resl.products.length
+            res.status(200).json({ status: true, result: {users,products,workouts,mealplans} })
         }catch(err){
             console.log(err);
             res.status(500).json({ status: false, message: 'Ошибка' })

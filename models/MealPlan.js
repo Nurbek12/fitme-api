@@ -44,6 +44,10 @@ export default model('MealPlan', new Schema({
             ref: 'ChildPlan'
         }]
     }],
+    visibledb: {
+        type: Boolean,
+        default: true
+    },
     category: String,
     childcategory: String,
 }, {

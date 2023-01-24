@@ -6,8 +6,7 @@ export default model('Product', new Schema({
         default: true
     },
     author: {
-        type: String,
-        required: true
+        type: String
     },
     authorid: {
         type: Schema.Types.ObjectId,

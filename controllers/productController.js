@@ -4,6 +4,10 @@ import { fileurl } from '../config/generatecode.js'
 
 export const getAll = async (req, res) => {
     try{
+        if(req.query?.user){
+            const resl = await UserDetail.findOne({ user_id: req.query.user });
+            Object.assign(req.query, { _id: { $nin: resl.products } })
+        }
         const result = await Product.find(req.query);
         res.status(200).json({ status: true, result })
     }catch(err){
@@ -14,7 +18,7 @@ export const getAll = async (req, res) => {
 
 export const getProduct = async (req, res) => {
     try{
-        const result = await Product.find(req.query);
+        const result = await Product.findOne(req.query);
         res.status(200).json({ status: true, result })
     }catch(err){
         console.log(err);
@@ -27,7 +31,7 @@ export const add = async (req, res) => {
         if(req.file) req.body.image = fileurl(req, req.file.filename)
         const result = await Product.create(req.body);
         if(!result.visibledb){
-            await UserDetail.findOneAndUpdate({ user_id: result.author }, { $push: { prodcuts: result._id } })
+            await UserDetail.findOneAndUpdate({ user_id: result.authorid }, { $push: { products: result._id } })
         }
         res.status(200).json({ status: true, result, message: 'Успешно добавлено!' })
     }catch(err){
@@ -51,7 +55,7 @@ export const delet = async (req, res) => {
     try{
         const result = await Product.findByIdAndDelete(req.params.id);
         if(!result.visibledb){
-            await UserDetail.findOneAndUpdate({ user_id: result.author }, { $pull: { prodcuts: result._id } })
+            await UserDetail.findOneAndUpdate({ user_id: result.authorid }, { $pull: { products: result._id } })
         }
         res.status(200).json({ status: true, result, message: 'Успешно удалено!' })
     }catch(err){

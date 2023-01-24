@@ -1,14 +1,14 @@
 import Training from '../models/Training.js'
 import Trainingdata from '../models/TrainingData.js'
-import UserDetail from '../models/UserDetails.js'
+import UserDetails from '../models/UserDetails.js'
 import { fileurl } from '../config/generatecode.js'
 
 function createTrainingDataTables(w, exs){
-    const weekStatus = w.map((el, i) => ({
+    const weekStatus = w.map(({start, end}, i) => ({
         id: i,
         statusText: '',
         status: false,
-        title: el
+        start, end
     }))
     const data = exs.map(({ workout }) => {
         return Array(w.length*4).fill().map((el) => 
@@ -26,7 +26,11 @@ function createTrainingDataTables(w, exs){
 
 export const getAll = async (req, res) => {
     try{
-        await Training.find()
+        if(req.query?.user){
+            const resl = await UserDetails.findOne({ user_id: req.query.user });
+            Object.assign(req.query, { _id: { $nin: resl.workouts } })
+        }
+        await Training.find(req.query)
             .populate([{
                 path: 'exercises.workout.exercise',
                 model: 'Exercise'
@@ -58,12 +62,13 @@ export const find = async (req, res) => {
  
 export const create = async (req, res) => {
     try{
-        if(req.body.exercises) req.body.exercises = JSON.parse(req.body.exercises);
-        req.body.weeks = ['Неделя 1-4', 'Неделя 5-8', 'Неделя 9-12'];
+        if(req.body.exercises && typeof req.body.exercises == "string") req.body.exercises = JSON.parse(req.body.exercises);
+        if(req.body.weeks && typeof req.body.weeks == "string") req.body.weeks = JSON.parse(req.body.weeks);
         if(req.file) req.body.image = fileurl(req, req.file.filename)
+        console.log(req.body);
         await Training.create(req.body).then((result) => {
                 if(req.query.user){
-                    UserDetails.findByIdAndUpdate({user_id: req.query.user}, { $push: {mealplans: result._id} })
+                    UserDetails.findOneAndUpdate({user_id: req.query.user}, { $push: {workouts: result._id} })
                 }
                 res.status(200).json({ status: true, result, message: 'Успешно добавлено!' })
             })
@@ -76,8 +81,9 @@ export const create = async (req, res) => {
 export const edit = async (req, res) => {
     try{
         if(req.file) req.body.image = fileurl(req, req.file.filename)
-        if(req.body.exercises) req.body.exercises = JSON.parse(req.body.exercises);
-        await Training.findByIdAndUpdate(req.params.id, { $set: req.body }, { new: true })
+        if(req.body.weeks && typeof req.body.weeks == "string") req.body.weeks = JSON.parse(req.body.weeks);
+        if(req.body.exercises && typeof req.body.exercises == "string") req.body.exercises = JSON.parse(req.body.exercises);
+        Training.findByIdAndUpdate(req.params.id, { $set: req.body }, { new: true })
             .exec((_, result) => {
                 res.status(200).json({ status: true, result, message: 'Успешно отредактировано!' })
             })
@@ -89,15 +95,12 @@ export const edit = async (req, res) => {
 
 export const addWeeklyToUser = async (req, res) => {
     try{
-        const { weeks, exercises } = await Training.findOne({ _id: req.params.id2 });
-        const { _id } = await Trainingdata.create(createTrainingDataTables(weeks, exercises));
-        await UserDetail.findByIdAndUpdate({user_id: req.params.id1}, { $push: {week_workouts: { training: req.params.id2, data: _id}} }, { new: true })
+        const { weeks, exercises, _id } = await Training.findOne({ _id: req.params.id2 });
+        const resl = await Trainingdata.create({...createTrainingDataTables(weeks, exercises), training: _id});
+        UserDetails.findOneAndUpdate({user_id: req.params.id1}, { $push: {week_workouts: resl._id} }, { new: true })
             .populate([{
                 path: 'workouts.training',
                 model: Training
-            }, {
-                path: 'workouts.data',
-                model: 'TrainingData'
             }])
             .exec((_, result) => {
                 res.status(200).json({ status: true, result: result.week_workouts, message: 'Успешно добавлено!' })
@@ -110,10 +113,9 @@ export const addWeeklyToUser = async (req, res) => {
 
 export const removeProgramToUser = async (req, res) => {
     try{
-        await User.findByIdAndUpdate(req.params.id1, { $pull: {week_workouts: req.params.id2} }, { new: true })
-            .populate('workouts')
+        UserDetails.findOneAndUpdate({ user_id: req.params.id1 }, { $pull: {week_workouts: req.params.id2} }, { new: true })
             .exec((_, result) => {
-                res.status(200).json({ status: true, result: result.workouts, message: 'Успешно добавлено!' })
+                res.status(200).json({ status: true, result: result.week_workouts, message: 'Успешно добавлено!' })
             })
     }catch(err){
         console.log(err);
@@ -173,7 +175,10 @@ export const editThisData = async (req, res) => {
 export const delet = async (req, res) => {
     try{
         await Training.findByIdAndDelete(req.params.id)
-        .then(() => {
+        .then((result) => {
+            if(req.query.user){
+                UserDetails.findOneAndUpdate({ user_id: req.query.user }, { $pull: { workouts: result._id } })
+            }
             res.status(200).json({ status: true, message: 'Успешно удалено!' })
         })
     }catch(err){
