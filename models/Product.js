@@ -5,10 +5,7 @@ export default model('Product', new Schema({
         type: String,
         default: true
     },
-    author: {
-        type: String
-    },
-    authorid: {
+    creator: {
         type: Schema.Types.ObjectId,
         ref: 'User'
     },

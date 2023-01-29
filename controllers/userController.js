@@ -1,5 +1,5 @@
 import User from "../models/User.js"
-import UserDetails from "../models/UserDetails.js"
+// import UserDetails from "../models/UserDetails.js"
 import { fileurl } from '../config/generatecode.js'
 import { Types } from "mongoose"
 
@@ -27,9 +27,9 @@ export const getAllUsers = async (req, res) => {
 
 export const getMy = async (req, res) => {
     try{
-        const myusers = await UserDetails.findOne({user_id: req.params.id})
+        // const myusers = await UserDetails.findOne({user_id: req.params.id})
         const result = await User.aggregate([{
-            $match: { _id: { $in: myusers.disciples.map(el => Types.ObjectId(el)) } },
+            $match: { _id: { $in: [].disciples.map(el => Types.ObjectId(el)) } },
         }, {
             $lookup: {
                 from: "samples",

@@ -3,6 +3,7 @@ import User from "../models/User.js"
 import { secret } from '../config/keys.js'
 import sendphone from '../config/sendphone.js'
 import generatecode from "../config/generatecode.js"
+// import UserDetails from "../models/UserDetails.js"
 
 export const register = async (req, res) => {
     try{
@@ -58,7 +59,8 @@ export const verify = async (req, res) => {
             if(user.verifycode !== req.body.verifycode){
                 return res.status(503).json({ status: false, message: 'Код неверный!' })
             }else{
-                const token = jwt.sign(JSON.stringify(user), secret, {});
+                const { name, _id, email, phonenumber, pro_acc } = user;
+                const token = jwt.sign(JSON.stringify({ name, _id, email, phonenumber, pro_acc }), secret, {});
                 return res.status(200).json({status: true, user, token, message: 'Успешный вход в систему'});
             }
         })

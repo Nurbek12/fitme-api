@@ -1,70 +1,76 @@
-import passport from 'passport'
-import { Strategy, ExtractJwt } from 'passport-jwt'
-import AppleStrategy from 'passport-apple'
+import fs from 'fs'
+import url from "url"
+import path from 'path'
 import jwt from 'jsonwebtoken'
-import GoogleStrategy from 'passport-google-oauth2'
+
+import passport from 'passport'
+import AppleStrategy from 'passport-apple'
 import FacebookStrategy from 'passport-facebook'
+import { Strategy, ExtractJwt } from 'passport-jwt'
+import GoogleStrategy from 'passport-google-oauth2'
+
 import { secret, googleClient, googleSecret, facebookAppId, facebookSecret, appleClient, appleKey, appleTeam } from './keys.js'
+
 import User from '../models/User.js'
 
-import url from "url"
-import fs from 'fs'
-import path from 'path'
 
 const dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
 passport.use('jwt', new Strategy({
     jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
     secretOrKey: secret
-}, (jwtPayload, cb) => {
-    return User.findOne({ _id: jwtPayload._id })
+    }, (jwtPayload, cb) => {
+        return User.findOne({ _id: jwtPayload._id })
         .then(user => {
             return cb(null, user);
         })
         .catch(err => {
             return cb(err);
         });
-}
+    }
 ))
 
 passport.use('google', new GoogleStrategy({
     clientID: googleClient,
     clientSecret: googleSecret,
     callbackURL: `http://localhost:3800/auth/google/callback`
-}, (accessToken, refreshToken, profile, done) => {
-    User.findOne({ email: profile.email })
-        .then(user => {
-            const name = profile.displayName.split(' ');
-            if (!user) {
-                let newUser = new User({
-                    provider: 'google',
-                    socialID: profile.id,
-                    email: profile.email,
-                    name: name[0] + ' ' + name[1],
-                    image: profile.picture,
-                    password: null
-                });
+    }, (accessToken, refreshToken, profile, done) => {
+        User.findOne({ email: profile.email })
+            .then(user => {
+                const uname = profile.displayName.split(' ');
+                if (!user) {
+                    let newUser = new User({
+                        provider: 'google',
+                        socialID: profile.id,
+                        email: profile.email,
+                        name: uname[0] + ' ' + uname[1],
+                        image: profile.picture,
+                        password: null
+                    });
 
-                newUser.save();
-                jwt.sign(JSON.stringify(newUser._doc),
-                    secret, {}, (err, token) => {
-                        if (err) throw err;
-                        return done(null, { user: newUser._doc, token });
-                    }
-                );
-            } else {
-                jwt.sign(JSON.stringify(user),
-                    secret, {}, (err, token) => {
-                        if (err) throw err;
-                        return done(null, { user, token });
-                    }
-                );
-            }
-        })
-        .catch(err => {
-            return done(err, false);
-        });
-}
+                    newUser.save();
+                    const { name, _id, email, phonenumber, pro_acc } = newUser;
+                    
+                    jwt.sign(JSON.stringify({ name, _id, email, phonenumber, pro_acc }),
+                        secret, {}, (err, token) => {
+                            if (err) throw err;
+                            return done(null, { user: newUser._doc, token });
+                        }
+                    );
+                } else {
+                    const { name, _id, email, phonenumber, pro_acc } = user;
+                    jwt.sign(JSON.stringify({ name, _id, email, phonenumber, pro_acc }),
+                        secret, {}, (err, token) => {
+                            if (err) throw err;
+                            return done(null, { user, token });
+                        }
+                    );
+                }
+            })
+            .catch(err => {
+                return done(err, false);
+            });
+    }
 ));
 
 passport.use('facebook', new FacebookStrategy(
@@ -94,14 +100,16 @@ passport.use('facebook', new FacebookStrategy(
                     });
 
                     newUser.save();
-                    jwt.sign(JSON.stringify(newUser._doc),
+                    const { name, _id, email, phonenumber, pro_acc } = newUser;
+                    jwt.sign(JSON.stringify({ name, _id, email, phonenumber, pro_acc }),
                         secret, {}, (err, token) => {
                             if (err) throw err;
                             return done(null, { user: newUser._doc, token });
                         }
                     );
                 } else {
-                    jwt.sign(JSON.stringify(user),
+                    const { name, _id, email, phonenumber, pro_acc } = user;
+                    jwt.sign(JSON.stringify({ name, _id, email, phonenumber, pro_acc }),
                         secret, {}, (err, token) => {
                             if (err) throw err;
                             return done(null, { user, token });
@@ -129,43 +137,46 @@ passport.use('apple', new AppleStrategy({
     // keyID: "",
     // privateKeyLocation: "",
     // passReqToCallback: true
-}, function (req, accessToken, refreshToken, idToken, profile, cb) {
-    User.findOne({ socialID: profile.id })
-        .then(user => {
-            console.log(profile);
-            if (!user) {
-                const newUser = new User({
-                    provider: 'apple',
-                    socialID: profile.id,
-                    email: profile.email,
-                    name: profile.name.firstName + " " + profile.name.lastName,
-                });
+    }, function (req, accessToken, refreshToken, idToken, profile, cb) {
+        User.findOne({ socialID: profile.id })
+            .then(user => {
+                console.log(profile);
+                if (!user) {
+                    const newUser = new User({
+                        provider: 'apple',
+                        socialID: profile.id,
+                        email: profile.email,
+                        name: profile.name.firstName + " " + profile.name.lastName,
+                    });
+                    
+                    newUser.save();
+                    const { name, _id, email, phonenumber, pro_acc } = newUser;
+                    jwt.sign(JSON.stringify({ name, _id, email, phonenumber, pro_acc }),
+                        secret, {}, (err, token) => {
+                            if (err) throw err;
+                            return done(null, { user: newUser._doc, token });
+                        }
+                    );
+                } else {
+                    const { name, _id, email, phonenumber, pro_acc } = user;
+                    jwt.sign(JSON.stringify({ name, _id, email, phonenumber, pro_acc }),
+                        secret, {}, (err, token) => {
+                            if (err) throw err;
+                            return done(null, { user, token });
+                        }
+                    );
+                }
+            })
+            .catch(err => {
+                return done(err, false);
+            });
+        cb(null, idToken);
+    }
+))
 
-                // newUser.save();
-                jwt.sign(JSON.stringify(newUser._doc),
-                    secret, {}, (err, token) => {
-                        if (err) throw err;
-                        return done(null, { user: newUser._doc, token });
-                    }
-                );
-            } else {
-                jwt.sign(JSON.stringify(user),
-                    secret, {}, (err, token) => {
-                        if (err) throw err;
-                        return done(null, { user, token });
-                    }
-                );
-            }
-        })
-        .catch(err => {
-            return done(err, false);
-        });
-    cb(null, idToken);
-}))
+export default async app => 
+    app.use(passport.initialize())
 
-export default async (app) => {
-    app
-        .use(passport.initialize())
         .get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'], session: false }))
         .get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/', session: false }),
             (_, res) => res.status(200).json(res.req.user))
@@ -177,4 +188,3 @@ export default async (app) => {
         .get('/auth/apple', passport.authenticate('apple', { session: false }))
         .get('/auth/apple/callback', passport.authenticate('apple', { failureRedirect: '/', session: false }),
             (_, res) => res.status(200).json(res.req.user))
-}

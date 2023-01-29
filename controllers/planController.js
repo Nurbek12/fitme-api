@@ -1,13 +1,8 @@
 import MealPlan from '../models/MealPlan.js'
 import ChildPlan from '../models/ChildPlan.js'
-import UserDetails from '../models/UserDetails.js'
 
 export const getAll = async (req, res) => {
     try{
-        if(req.query?.user){
-            const resl = await UserDetails.findOne({ user_id: req.query.user });
-            Object.assign(req.query, { _id: { $nin: resl.mealplans } })
-        }
         await MealPlan.find(req.query)
             .populate([{
                 path: 'plan.meal',
@@ -51,9 +46,9 @@ export const create = async (req, res) => {
     try{
         await MealPlan.create(req.body)
             .then((result) => {
-                if(req.query.user){
-                    UserDetails.findOneAndUpdate({user_id: req.query.user}, { $push: {mealplans: result._id} }).then(() => console.log('success'))
-                }
+                // if(req.query.user){
+                //     UserDetails.findOneAndUpdate({user_id: req.query.user}, { $push: {mealplans: result._id} }).then(() => console.log('success'))
+                // }
                 res.status(200).json({ status: true, result, message: 'Успешно добавлено!' })
             })
     }catch(err){
@@ -103,70 +98,43 @@ export const removeChild = async (req, res) => {
     }
 }
 
-export const addChildProduct = async (req, res) => {
-    try{
-        await ChildPlan.findByIdAndUpdate(req.params.id, { $push: {products: req.body} }, { new: true })
-            .populate('products.product', 'title carbohydrates fat proteins calories') 
-            .then((result) => {
-                res.status(200).json({ status: true, result, message: 'Успешно добавлено!' })
-            })
-    }catch(err){
-        console.log(err);
-        res.status(500).json({ status: false, message: 'Ошибка!' })
-    }
-}
+// export const addChildProduct = async (req, res) => {
+//     try{
+//         await ChildPlan.findByIdAndUpdate(req.params.id, { $push: {products: req.body} }, { new: true })
+//             .populate('products.product', 'title carbohydrates fat proteins calories') 
+//             .then((result) => {
+//                 res.status(200).json({ status: true, result, message: 'Успешно добавлено!' })
+//             })
+//     }catch(err){
+//         console.log(err);
+//         res.status(500).json({ status: false, message: 'Ошибка!' })
+//     }
+// }
 
-export const editChildProduct = async (req, res) => {
-    try{
-        await ChildPlan.findOneAndUpdate({"products._id": req.params.id}, {$set: {"products.$": req.body}}, { new: true })
-            .populate('products.product', 'title carbohydrates fat proteins calories')     
-            .then((result) => {
-                res.status(200).json({ status: true, result, message: 'Успешно отредактировано!' })
-            })
-    }catch(err){
-        console.log(err);
-        res.status(500).json({ status: false, message: 'Ошибка!' })
-    }
-}
+// export const editChildProduct = async (req, res) => {
+//     try{
+//         await ChildPlan.findOneAndUpdate({"products._id": req.params.id}, {$set: {"products.$": req.body}}, { new: true })
+//             .populate('products.product', 'title carbohydrates fat proteins calories')     
+//             .then((result) => {
+//                 res.status(200).json({ status: true, result, message: 'Успешно отредактировано!' })
+//             })
+//     }catch(err){
+//         console.log(err);
+//         res.status(500).json({ status: false, message: 'Ошибка!' })
+//     }
+// }
 
-export const removeChildProduct = async (req, res) => {
-    try{
-        await ChildPlan.findByIdAndUpdate(req.params.id, { $pull: {products: {_id: req.body.id}} }, { new: true })
-            .then((result) => {
-                res.status(200).json({ status: true, result, message: 'Успешно удалено!' })
-            })
-    }catch(err){
-        console.log(err);
-        res.status(500).json({ status: false, message: 'Ошибка!' })
-    }
-}
-
-
-export const addProgramToUser = async (req, res) => {
-    try{
-        await UserDetails.findOneAndUpdate({user_id: req.params.id1}, { $push: {mealplans: req.params.id2} }, { new: true })
-            .populate('mealplans')
-            .exec((_, result) => {
-                res.status(200).json({ status: true, result: result.mealplans, message: 'Успешно добавлено!' })
-            })
-    }catch(err){
-        console.log(err);
-        res.status(500).json({ status: false, message: 'Ошибка!' })
-    }
-}
-
-export const removeProgramToUser = async (req, res) => {
-    try{
-        await UserDetails.findOneAndUpdate({user_id: req.params.id1}, { $pull: {mealplans: req.params.id2} }, { new: true })
-            .populate('mealplans')
-            .exec((_, result) => {
-                res.status(200).json({ status: true, result: result.mealplans, message: 'Успешно добавлено!' })
-            })
-    }catch(err){
-        console.log(err);
-        res.status(500).json({ status: false, message: 'Ошибка!' })
-    }
-}
+// export const removeChildProduct = async (req, res) => {
+//     try{
+//         await ChildPlan.findByIdAndUpdate(req.params.id, { $pull: {products: {_id: req.body.id}} }, { new: true })
+//             .then((result) => {
+//                 res.status(200).json({ status: true, result, message: 'Успешно удалено!' })
+//             })
+//     }catch(err){
+//         console.log(err);
+//         res.status(500).json({ status: false, message: 'Ошибка!' })
+//     }
+// }
 
 export const edit = async (req, res) => {
     try{
@@ -191,10 +159,10 @@ export const edit = async (req, res) => {
 export const delet = async (req, res) => {
     try{
         await MealPlan.findByIdAndDelete(req.params.id)
-        .then((result) => {
-            if(req.query.user){
-                UserDetails.findOneAndUpdate({ user_id: req.query.user }, { $pull: { mealplans: result._id } })
-            }
+        .then(() => {
+            // if(req.query.user){
+            //     UserDetails.findOneAndUpdate({ user_id: req.query.user }, { $pull: { mealplans: req.params.id } }).then()
+            // }
             res.status(200).json({ status: true, message: 'Успешно удалено!' })
         })
     }catch(err){
@@ -202,3 +170,49 @@ export const delet = async (req, res) => {
         res.status(500).json({ status: false, message: 'Ошибка!' })
     }
 }
+
+
+// export const getMy = async (req, res) => {
+//     try{
+//         const result = await Workout.find({ _id: { $in: req?.user?.myWorkoutPlans } })
+//         .populate([{
+//             path: 'creator',
+//             model: 'User',
+//             select: ['name', 'phonenumber', 'email']
+//         },{
+//             path: 'workout.exercise',
+//             model: 'Exercise'
+//         }])
+//         .select('-visibledb -__v')
+//         res.status(200).json({ status: true, result })
+//     }catch(err){
+//         console.log(err);
+//         res.status(500).json({ status: false, message: 'Ошибка' })
+//     }
+// }
+
+// export const addMyDetails = async (req, res) => {
+//     try{
+//         await User.findByIdAndUpdate(req.user_id, { $push: { myWorkoutPlans: req.params.id } }, { new: true } )
+//         .exec(async (_, __) => {
+//             const result = await Workout.findById(req.params.id);
+//             res.status(200).json({ status: true, result: result, message: 'Успешно добавлено!' })
+//         })
+//     }catch(err){
+//         console.log(err);
+//         res.status(500).json({ status: false, message: 'Ошибка' })
+//     }
+// }
+
+// export const removeMyDetails = async (req, res) => {
+//     try{
+//         await User.findByIdAndUpdate(req.user_id, { $pull: { myWorkoutPlans: req.params.id } }, { new: true } )
+//         .exec(async (_, __) => {
+//             const result = await Workout.findById(req.params.id);
+//             res.status(200).json({ status: true, result: result, message: 'Успешно удалено!' })
+//         })
+//     }catch(err){
+//         console.log(err);
+//         res.status(500).json({ status: false, message: 'Ошибка' })
+//     }
+// }

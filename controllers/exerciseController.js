@@ -1,14 +1,11 @@
 import Exercise from '../models/Exercise.js'
-import UserDetails from '../models/UserDetails.js'
 import { fileurl } from '../config/generatecode.js'
+import User from '../models/User.js'
 
 export const getAll = async (req, res) => {
     try{
-        if(req.query?.user){
-            const resl = await UserDetails.findOne({ user_id: req.query.user });
-            Object.assign(req.query, { _id: { $nin: resl.exercises } })
-        }
-        const result = await Exercise.find(req.query);
+        const result = await Exercise.find({ _id: { $nin: req?.user?.favoriteExercises }, ...req.query})
+        .select('-__v');
         res.status(200).json({ status: true, result })
     }catch(err){
         console.log(err);
@@ -67,6 +64,42 @@ export const delet = async (req, res) => {
     try{
         const result = await Exercise.findByIdAndDelete(req.params.id);
         res.status(200).json({ status: true, result, message: 'Успешно удалено!' })
+    }catch(err){
+        console.log(err);
+        res.status(500).json({ status: false, message: 'Ошибка' })
+    }
+}
+
+export const getMy = async (req, res) => {
+    try{
+        const result = await Exercise.find({ _id: { $in: req?.user?.favoriteExercises } })
+        res.status(200).json({ status: true, result })
+    }catch(err){
+        console.log(err);
+        res.status(500).json({ status: false, message: 'Ошибка' })
+    }
+}
+
+export const addMyDetails = async (req, res) => {
+    try{
+        await User.findByIdAndUpdate(req.user_id, { $push: { favoriteExercises: req.params.id } }, { new: true } )
+        .exec(async (_, __) => {
+            const result = await Exercise.findById(req.params.id);
+            res.status(200).json({ status: true, result: result, message: 'Успешно добавлено!' })
+        })
+    }catch(err){
+        console.log(err);
+        res.status(500).json({ status: false, message: 'Ошибка' })
+    }
+}
+
+export const removeMyDetails = async (req, res) => {
+    try{
+        await User.findByIdAndUpdate(req.user_id, { $pull: { favoriteExercises: req.params.id } }, { new: true } )
+        .exec(async (_, __) => {
+            const result = await Exercise.findById(req.params.id);
+            res.status(200).json({ status: true, result: result, message: 'Успешно удалено!' })
+        })
     }catch(err){
         console.log(err);
         res.status(500).json({ status: false, message: 'Ошибка' })

@@ -3,7 +3,7 @@ import { auth } from '../middleware/authMilddleware.js'
 import { getAll, create, edit, delet } from '../controllers/samplesController.js'
 
 export default Router()
-    .get('/all', auth, getAll)
+    .get('/all/:id', auth, getAll)
 
     .post('/add', auth, create)
 

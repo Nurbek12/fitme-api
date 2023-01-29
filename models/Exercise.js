@@ -6,22 +6,20 @@ export default model('Exercise', new Schema({
         required: true
     },
     video: String,
+    image: String,
     description: {
         type: String,
         required: true
     },
-    image: String,
-    author: {
-        type: String,
-        required: true
-    },
-    authorid: {
-        type: Schema.Types.ObjectId,
-        ref: 'User'
-    },
     metadescription: String,
-    category: String,
-    childcategory: String,
+    parentCategory: {
+        type: Schema.Types.ObjectId,
+        ref: 'Category'
+    },
+    category: {
+        type: Schema.Types.ObjectId,
+        ref: 'Category'
+    },
 }, {
     timestamps: true
 }))

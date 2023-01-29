@@ -20,6 +20,7 @@ export const auth = (req, res, next) => {
         User.findById(_id)
         .then(userdata => { 
             req.user = userdata;
+            req.user_id = _id;
             next()
         })
     });
