@@ -27,23 +27,7 @@ export const getAllUsers = async (req, res) => {
 
 export const getMy = async (req, res) => {
     try{
-        // const myusers = await UserDetails.findOne({user_id: req.params.id})
-        const result = await User.aggregate([{
-            $match: { _id: { $in: [].disciples.map(el => Types.ObjectId(el)) } },
-        }, {
-            $lookup: {
-                from: "samples",
-                localField: "_id",
-                foreignField: "_id",
-                as: "sampl"
-            },
-        }, {
-            $project: {
-                name: 1, 
-                email: 1, 
-                phonenumber: 1
-            }
-        }])
+        const result = await User.find({ _id: { $in: req?.user?.disciples.map(el => Types.ObjectId(el)) } })
         res.status(200).json({ status: true, result })
     }catch(err){
         console.log(err);

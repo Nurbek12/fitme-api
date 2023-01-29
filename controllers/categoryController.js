@@ -1,22 +1,10 @@
 import Category from '../models/Category.js'
 
-export const getParent = async (req, res) => {
-    try {
-        await Category.find({ parent: null })
-            .populate('children')
-            .sort({ type: 1 })
-            .exec((_, result) => {
-                res.status(200).json({ status: true, result })
-            })
-    } catch (err) {
-        console.log(err);
-        res.status(500).json({ status: false, message: 'Ошибка' })
-    }
-}
-
 export const getAll = async (req, res) => {
     try {
-        await Category.find()
+        await Category.find({ parent: null })
+            .populate('children', 'name type parent')
+            .sort({ type: 1 })
             .exec((_, result) => {
                 res.status(200).json({ status: true, result })
             })
@@ -30,6 +18,16 @@ export const get = async (req, res) => {
     try {
         let result = await Category.find({ ...req.query, parent: null })
         .populate('children', 'name type parent')
+        res.status(200).json({ status: true, result })    
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ status: false, message: 'Ошибка' })
+    }
+}
+
+export const getForme = async (req, res) => {
+    try {
+        let result = await Category.find({ ...req.query, parent: null })
         res.status(200).json({ status: true, result })    
     } catch (err) {
         console.log(err);

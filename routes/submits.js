@@ -3,7 +3,7 @@ import { auth } from "../middleware/authMilddleware.js";
 import { getMy, create, accept, cancel, refuse } from "../controllers/submitController.js";
 
 export default Router()
-    .get('/get/:id', auth, getMy)
+    .get('/get', auth, getMy)
     
     .post('/create', auth, create)
     .delete('/refuse/:id', auth, refuse)

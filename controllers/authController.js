@@ -54,7 +54,9 @@ export const admin = async (req, res) => {
 
 export const verify = async (req, res) => {
     try{
-        await User.findOne({phonenumber: req.body.phonenumber}).then(user => {
+        await User.findOne({phonenumber: req.body.phonenumber})
+        .select('-__v -role -disciples')
+        .then(user => {
             if(!user) return res.status(404).json({status: false, message: 'Этот пользователь не найден'})
             if(user.verifycode !== req.body.verifycode){
                 return res.status(503).json({ status: false, message: 'Код неверный!' })

@@ -4,14 +4,23 @@ import User from '../models/User.js'
 
 export const getAll = async (req, res) => {
     try{
-        await Workout.find({ _id: { $nin: req?.user?.myWorkoutPlans }, ...req.query})
+        await Workout.find({ _id: { $nin: req?.user?.myWorkoutPlans }, visibledb: true})
             .populate([{
                 path: 'creator',
                 model: 'User',
                 select: ['name', 'phonenumber', 'email']
             },{
                 path: 'workout.exercise',
-                model: 'Exercise'
+                model: 'Exercise',
+                populate: [{
+                    path: 'parentCategory',
+                    model: 'Category',
+                    select: ['name', 'type']
+                },{
+                    path: 'category',
+                    model: 'Category',
+                    select: ['name', 'type']
+                }]
             }])
             .select('-visibledb -__v')
             .exec((_, result) => {
@@ -32,7 +41,16 @@ export const find = async (req, res) => {
                 select: ['name', 'phonenumber', 'email']
             },{
                 path: 'workout.exercise',
-                model: 'Exercise'
+                model: 'Exercise',
+                populate: [{
+                    path: 'parentCategory',
+                    model: 'Category',
+                    select: ['name', 'type']
+                },{
+                    path: 'category',
+                    model: 'Category',
+                    select: ['name', 'type']
+                }]
             }])
             .exec((_, result) => {
                 res.status(200).json({ status: true, result })
@@ -56,7 +74,16 @@ export const create = async (req, res) => {
                     select: ['name', 'phonenumber', 'email']
                 },{
                     path: 'workout.exercise',
-                    model: 'Exercise'
+                    model: 'Exercise',
+                    populate: [{
+                        path: 'parentCategory',
+                        model: 'Category',
+                        select: ['name', 'type']
+                    },{
+                        path: 'category',
+                        model: 'Category',
+                        select: ['name', 'type']
+                    }]
                 }])
                 res.status(200).json({ status: true, result, message: 'Успешно добавлено!' })
             })
@@ -83,8 +110,8 @@ export const edit = async (req, res) => {
 export const delet = async (req, res) => {
     try{
         await Workout.findByIdAndDelete(req.params.id)
-        .then((result) => {
-            if(result.creator.id === req.user_id && req.user.role !== 'ADMIN') User.findByIdAndUpdate(req?.user_id, { $pull: { myWorkoutPlans: result._id } }).then()
+        .then((_) => {
+            // if(result.creator.id === req.user_id && req.user.role !== 'ADMIN') User.findByIdAndUpdate(req?.user_id, { $pull: { myWorkoutPlans: result._id } }).then()
             res.status(200).json({ status: true, message: 'Успешно удалено!' })
         })
     }catch(err){
@@ -102,7 +129,16 @@ export const getMy = async (req, res) => {
             select: ['name', 'phonenumber', 'email']
         },{
             path: 'workout.exercise',
-            model: 'Exercise'
+            model: 'Exercise',
+            populate: [{
+                path: 'parentCategory',
+                model: 'Category',
+                select: ['name', 'type']
+            },{
+                path: 'category',
+                model: 'Category',
+                select: ['name', 'type']
+            }]
         }])
         .select('-visibledb -__v')
         res.status(200).json({ status: true, result })
@@ -129,8 +165,10 @@ export const removeMyDetails = async (req, res) => {
     try{
         await User.findByIdAndUpdate(req.user_id, { $pull: { myWorkoutPlans: req.params.id } }, { new: true } )
         .exec(async (_, __) => {
-            const result = await Workout.findById(req.params.id);
-            res.status(200).json({ status: true, result: result, message: 'Успешно удалено!' })
+            await Workout.findById(req.params.id).then(result => {
+                if(result.creator.toString() == req.user_id) result.delete()
+            })
+            res.status(200).json({ status: true, message: 'Успешно удалено!' })
         })
     }catch(err){
         console.log(err);

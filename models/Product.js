@@ -5,10 +5,6 @@ export default model('Product', new Schema({
         type: String,
         default: true
     },
-    creator: {
-        type: Schema.Types.ObjectId,
-        ref: 'User'
-    },
     image: String,
     carbohydrates: Number,
     fat: Number,
@@ -16,8 +12,12 @@ export default model('Product', new Schema({
     calories: Number,
     portion: Number,
     category: {
-        type: String,
-        default: true
+        type: Schema.Types.ObjectId,
+        ref: 'Category'
+    },
+    creator: {
+        type: Schema.Types.ObjectId,
+        ref: 'User'
     },
     childcategory: String,
     visibledb: {

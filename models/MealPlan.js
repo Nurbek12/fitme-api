@@ -13,11 +13,7 @@ export default model('MealPlan', new Schema({
         type: String,
         required: true
     },
-    author: {
-        type: String,
-        required: true
-    },
-    authorid: {
+    creator: {
         type: Schema.Types.ObjectId,
         ref: 'User'
     },
@@ -37,16 +33,17 @@ export default model('MealPlan', new Schema({
         type: Number,
     },
 
-    plan: [{
-        title: String,
-        meal: [{
-            type: Schema.Types.ObjectId,
-            ref: 'ChildPlan'
-        }]
-    }],
+    plan: [
+        [
+            {
+                type: Schema.Types.ObjectId,
+                ref: 'ChildPlan'
+            }
+        ]
+    ],
     visibledb: {
         type: Boolean,
-        default: true
+        default: false
     },
     category: String,
     childcategory: String,

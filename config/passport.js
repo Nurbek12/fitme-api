@@ -36,6 +36,7 @@ passport.use('google', new GoogleStrategy({
     callbackURL: `http://localhost:3800/auth/google/callback`
     }, (accessToken, refreshToken, profile, done) => {
         User.findOne({ email: profile.email })
+            .select('-__v -role -disciples')
             .then(user => {
                 const uname = profile.displayName.split(' ');
                 if (!user) {
@@ -88,6 +89,7 @@ passport.use('facebook', new FacebookStrategy(
     },
     (accessToken, refreshToken, profile, done) => {
         User.findOne({ socialID: profile.id })
+            .select('-__v -role -disciples')
             .then(user => {
                 if (!user) {
                     const newUser = new User({
@@ -139,6 +141,7 @@ passport.use('apple', new AppleStrategy({
     // passReqToCallback: true
     }, function (req, accessToken, refreshToken, idToken, profile, cb) {
         User.findOne({ socialID: profile.id })
+            .select('-__v -role -disciples')
             .then(user => {
                 console.log(profile);
                 if (!user) {

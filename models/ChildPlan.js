@@ -1,9 +1,9 @@
 import { model, Schema } from "mongoose"
 
 export default model('ChildPlan', new Schema({
-    desc: String,
+    description: String,
     products: [{
-        count: Number,
+        gram: Number,
         product: {
             type: Schema.Types.ObjectId,
             ref: 'Product'

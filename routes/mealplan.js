@@ -1,11 +1,9 @@
 import { Router } from 'express'
 import { auth } from '../middleware/authMilddleware.js'
 import { getAll, getPlan, create, 
-    // addProgramToUser, removeProgramToUser, 
+    addMyDetails, removeMyDetails, getMy,
     createChild, editChild, removeChild, 
-    // removeChildProduct,
-    // addChildProduct, editChildProduct,
-    edit, delet } from '../controllers/planController.js'
+    edit, delet } from '../controllers/mealplanController.js'
 
 export default Router()
     .get('/all', auth, getAll)
@@ -17,12 +15,9 @@ export default Router()
     .put('/child/edit/:id', auth, editChild)
     .put('/child/delete/:id', auth, removeChild)
 
-    // .put('/child/prodadd/:id', auth, addChildProduct)
-    // .put('/child/prodedit/:id', auth, editChildProduct)
-    // .put('/child/prodremove/:id', auth, removeChildProduct)
-
-    // .put('/addtouser/:id1/:id2', auth, addProgramToUser)
-    // .put('/removetouser/:id1/:id2', auth, removeProgramToUser)
+    .get('/my', auth, getMy)
+    .put('/addmy/:id', auth, addMyDetails)
+    .put('/delmy/:id', auth, removeMyDetails)
 
     .put('/edit/:id', auth, edit)
 

@@ -1,18 +1,24 @@
 import MealPlan from '../models/MealPlan.js'
 import ChildPlan from '../models/ChildPlan.js'
+import User from '../models/User.js'
 
 export const getAll = async (req, res) => {
     try{
-        await MealPlan.find(req.query)
+        await MealPlan.find({ _id: { $nin: req?.user?.mealplans }, visibledb: true})
             .populate([{
-                path: 'plan.meal',
+                path: 'plan',
                 model: 'ChildPlan',
                 populate: {
                     path: 'products.product',
                     model: 'Product',
                     select: ['title', 'carbohydrates', 'fat', 'proteins', 'calories'],
                 }
+            }, {    
+                path: 'creator',
+                model: 'User',
+                select: ['name', 'phonenumber', 'email']
             }])
+            .select('-visibledb -__v')
             .exec((_, result) => {
                 res.status(200).json({ status: true, result })
             })
@@ -26,13 +32,19 @@ export const getPlan = async (req, res) => {
     try{
         await MealPlan.find(req.query)
             .populate([{
-                path: 'plan.meal',
+                path: 'plan',
                 model: 'ChildPlan',
                 populate: {
                     path: 'products.product',
-                    model: 'Product'
+                    model: 'Product',
+                    select: ['title', 'carbohydrates', 'fat', 'proteins', 'calories'],
                 }
+            }, {    
+                path: 'creator',
+                model: 'User',
+                select: ['name', 'phonenumber', 'email']
             }])
+            .select('-visibledb -__v')
             .exec((_, result) => {
                 res.status(200).json({ status: true, result })
             })
@@ -46,9 +58,20 @@ export const create = async (req, res) => {
     try{
         await MealPlan.create(req.body)
             .then((result) => {
-                // if(req.query.user){
-                //     UserDetails.findOneAndUpdate({user_id: req.query.user}, { $push: {mealplans: result._id} }).then(() => console.log('success'))
-                // }
+                if(req?.user?.role !== 'ADMIN') User.findByIdAndUpdate(req?.user_id, { $push: { mealplans: result._id } }).then()
+                result.populate([{
+                    path: 'plan',
+                    model: 'ChildPlan',
+                    populate: {
+                        path: 'products.product',
+                        model: 'Product',
+                        select: ['title', 'carbohydrates', 'fat', 'proteins', 'calories'],
+                    }
+                }, {    
+                    path: 'creator',
+                    model: 'User',
+                    select: ['name', 'phonenumber', 'email']
+                }])
                 res.status(200).json({ status: true, result, message: 'Успешно добавлено!' })
             })
     }catch(err){
@@ -140,13 +163,19 @@ export const edit = async (req, res) => {
     try{
         await MealPlan.findByIdAndUpdate(req.params.id, { $set: req.body }, { new: true })
             .populate([{
-                path: 'plan.meal',
+                path: 'plan',
                 model: 'ChildPlan',
                 populate: {
                     path: 'products.product',
-                    model: 'Product'
+                    model: 'Product',
+                    select: ['title', 'carbohydrates', 'fat', 'proteins', 'calories'],
                 }
+            }, {    
+                path: 'creator',
+                model: 'User',
+                select: ['name', 'phonenumber', 'email']
             }])
+            .select('-visibledb -__v')
             .exec((_, result) => {
                 res.status(200).json({ status: true, result, message: 'Успешно отредактировано!' })
             })
@@ -159,10 +188,8 @@ export const edit = async (req, res) => {
 export const delet = async (req, res) => {
     try{
         await MealPlan.findByIdAndDelete(req.params.id)
-        .then(() => {
-            // if(req.query.user){
-            //     UserDetails.findOneAndUpdate({ user_id: req.query.user }, { $pull: { mealplans: req.params.id } }).then()
-            // }
+        .then((result) => {
+            // if(result?.creator?.id === req.user_id && req.user.role !== 'ADMIN') User.findByIdAndUpdate(req?.user_id, { $pull: { mealplans: result._id } }).then()
             res.status(200).json({ status: true, message: 'Успешно удалено!' })
         })
     }catch(err){
@@ -171,48 +198,53 @@ export const delet = async (req, res) => {
     }
 }
 
+export const getMy = async (req, res) => {
+    try{
+        const result = await MealPlan.find({ _id: { $in: req?.user?.mealplans } })
+        .populate([{
+            path: 'plan',
+            model: 'ChildPlan',
+            populate: {
+                path: 'products.product',
+                model: 'Product',
+                select: ['title', 'carbohydrates', 'fat', 'proteins', 'calories'],
+            }
+        }, {    
+            path: 'creator',
+            model: 'User',
+            select: ['name', 'phonenumber', 'email']
+        }])
+        .select('-visibledb -__v')
+        res.status(200).json({ status: true, result })
+    }catch(err){
+        console.log(err);
+        res.status(500).json({ status: false, message: 'Ошибка' })
+    }
+}
 
-// export const getMy = async (req, res) => {
-//     try{
-//         const result = await Workout.find({ _id: { $in: req?.user?.myWorkoutPlans } })
-//         .populate([{
-//             path: 'creator',
-//             model: 'User',
-//             select: ['name', 'phonenumber', 'email']
-//         },{
-//             path: 'workout.exercise',
-//             model: 'Exercise'
-//         }])
-//         .select('-visibledb -__v')
-//         res.status(200).json({ status: true, result })
-//     }catch(err){
-//         console.log(err);
-//         res.status(500).json({ status: false, message: 'Ошибка' })
-//     }
-// }
+export const addMyDetails = async (req, res) => {
+    try{
+        await User.findByIdAndUpdate(req.user_id, { $push: { mealplans: req.params.id } } )
+        .exec(async (_, __) => {
+            res.status(200).json({ status: true, message: 'Успешно добавлено!' })
+        })
+    }catch(err){
+        console.log(err);
+        res.status(500).json({ status: false, message: 'Ошибка' })
+    }
+}
 
-// export const addMyDetails = async (req, res) => {
-//     try{
-//         await User.findByIdAndUpdate(req.user_id, { $push: { myWorkoutPlans: req.params.id } }, { new: true } )
-//         .exec(async (_, __) => {
-//             const result = await Workout.findById(req.params.id);
-//             res.status(200).json({ status: true, result: result, message: 'Успешно добавлено!' })
-//         })
-//     }catch(err){
-//         console.log(err);
-//         res.status(500).json({ status: false, message: 'Ошибка' })
-//     }
-// }
-
-// export const removeMyDetails = async (req, res) => {
-//     try{
-//         await User.findByIdAndUpdate(req.user_id, { $pull: { myWorkoutPlans: req.params.id } }, { new: true } )
-//         .exec(async (_, __) => {
-//             const result = await Workout.findById(req.params.id);
-//             res.status(200).json({ status: true, result: result, message: 'Успешно удалено!' })
-//         })
-//     }catch(err){
-//         console.log(err);
-//         res.status(500).json({ status: false, message: 'Ошибка' })
-//     }
-// }
+export const removeMyDetails = async (req, res) => {
+    try{
+        await User.findByIdAndUpdate(req.user_id, { $pull: { mealplans: req.params.id } })
+        .exec(async (_, __) => {
+            await MealPlan.findById(req.params.id).then(result => {
+                if(result.creator.toString() == req.user_id) result.delete()
+            })
+            res.status(200).json({ status: true, message: 'Успешно удалено!' })
+        })
+    }catch(err){
+        console.log(err);
+        res.status(500).json({ status: false, message: 'Ошибка' })
+    }
+}

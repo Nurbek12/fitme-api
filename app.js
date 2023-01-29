@@ -12,10 +12,10 @@ import authroutes from './routes/auth.js'
 import userroutes from "./routes/user.js"
 import productroutes from "./routes/product.js"
 import dishroutes from "./routes/dish.js"
-import planroutes from "./routes/plan.js"
+import planroutes from "./routes/mealplan.js"
 import exerciseroutes from "./routes/exercise.js"
 import workoutroutes from "./routes/workout.js"
-// import submitroutes from "./routes/submits.js"
+import submitroutes from "./routes/submits.js"
 import categotyroutes from "./routes/category.js"
 import foodcroutes from "./routes/foodConsumed.js"
 import scheduleroutes from "./routes/schedule.js"
@@ -43,7 +43,7 @@ app.use('/plan', planroutes)
 app.use('/exercise', exerciseroutes)
 app.use('/workout', workoutroutes)
 app.use('/schedule', scheduleroutes)
-// app.use('/submit', submitroutes)
+app.use('/submit', submitroutes)
 app.use('/category', categotyroutes)
 app.use('/foodate', foodcroutes)
 app.use('/samples', sampleroutes)

@@ -26,7 +26,7 @@ export default model('FoodConsumed', new Schema({
         ref: 'User'
     },
     products: [{
-        count: Number,
+        gram: Number,
         product: {
             type: Schema.Types.ObjectId,
             ref: 'Product'
